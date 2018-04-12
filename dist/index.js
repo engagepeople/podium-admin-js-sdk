@@ -1976,6 +1976,75 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./src/Podium/ConvertTime.ts":
+/*!***********************************!*\
+  !*** ./src/Podium/ConvertTime.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class ConvertTime {
+    constructor() {
+        // tslint:disable-next-line:no-any
+        this.loopNestedObj = (obj, method) => {
+            Object.keys(obj).forEach((key) => {
+                if (obj[key] && typeof obj[key] === 'object' && !(obj[key] instanceof Date)) {
+                    this.loopNestedObj(obj[key], method);
+                }
+                else {
+                    if ((method === 'toUTC') && (typeof obj[key] === 'string')) {
+                        if (this.isAPIDate(obj[key])) {
+                            obj[key] = this.toUTC(obj[key]);
+                        }
+                    }
+                    if ((method === 'toAPI') && (obj[key] instanceof Date)) {
+                        obj[key] = this.toAPI(obj[key]);
+                    }
+                }
+            });
+            return obj;
+        };
+        this.isAPIDate = (key) => {
+            // tslint:disable-next-line:max-line-length
+            const n = /^\d\d\d\d-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01]) (00|[0-9]|1[0-9]|2[0-3]):([0-9]|[0-5][0-9]):([0-9]|[0-5][0-9])$/g;
+            return n.test(key);
+        };
+        this.toUTC = (key) => {
+            return new Date(key.replace(' ', 'T') + 'Z');
+        };
+        this.toAPI = (key) => {
+            return `${key.getUTCFullYear()}-
+        ${this.strPad(key.getUTCMonth() + 1)}-
+        ${this.strPad(key.getUTCDate())}
+        ${this.strPad(key.getUTCHours())}:
+        ${this.strPad(key.getUTCMinutes())}:
+        ${this.strPad(key.getUTCSeconds())}`;
+        };
+        this.strPad = (n) => {
+            return String('00' + n).slice(-2);
+        };
+    }
+    APIToUTC(data) {
+        if (typeof data !== 'object') {
+            return data;
+        }
+        return this.loopNestedObj(data, 'toUTC');
+    }
+    UTCtoAPI(data) {
+        if (typeof data !== 'object') {
+            return data;
+        }
+        return this.loopNestedObj(data, 'toAPI');
+    }
+}
+exports.ConvertTime = ConvertTime;
+
+
+/***/ }),
+
 /***/ "./src/Podium/PodiumRequest.ts":
 /*!*************************************!*\
   !*** ./src/Podium/PodiumRequest.ts ***!
@@ -1987,11 +2056,13 @@ process.umask = function() { return 0; };
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+const ConvertTime_1 = __webpack_require__(/*! ./ConvertTime */ "./src/Podium/ConvertTime.ts");
 const Token_1 = __webpack_require__(/*! ./Token */ "./src/Podium/Token.ts");
 class PodiumRequest extends Token_1.Token {
     constructor(settings) {
         super();
         this.settings = settings;
+        this.ConvertTime = new ConvertTime_1.ConvertTime();
     }
     GetRequest(resource, params) {
         const request = {
@@ -2023,13 +2094,12 @@ class PodiumRequest extends Token_1.Token {
                 reject("INVALID_TOKEN" /* INVALID_TOKEN */);
             });
         }
-        // transformResponse (data) {
-        //     return convertTime.APIToUTC(JSON.parse(data))
-        // },
-        // transformRequest: [function (data, headers) {
-        //   return convertTime.UTCtoAPI(data)
-        // }],
-        config = Object.assign({ headers: this.makeHeaders() }, config);
+        config = Object.assign({
+            headers: this.makeHeaders(),
+            transformResponse: [(data) => {
+                    return this.ConvertTime.APIToUTC(JSON.parse(data));
+                }],
+        }, config);
         return new Promise((resolve, reject) => {
             return axios_1.default(this.makeUrl(resource), config)
                 .then((response) => {
@@ -2249,7 +2319,7 @@ class Podium {
         };
     }
 }
-exports.Podium = Podium;
+exports.default = Podium;
 
 
 /***/ })

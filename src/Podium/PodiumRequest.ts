@@ -1,13 +1,16 @@
 import axios, {AxiosError, AxiosRequestConfig} from 'axios'
 import {API_CODE, IAuthResponse, IPodiumErrorResponse, IPodiumPromise, IResponse, ISettings} from '../../types'
+import {ConvertTime} from './ConvertTime'
 import {Token} from './Token'
 
 export class PodiumRequest extends Token {
     private settings: ISettings
+    private ConvertTime: ConvertTime
 
     constructor(settings: ISettings) {
         super()
         this.settings = settings
+        this.ConvertTime = new ConvertTime()
     }
 
     protected GetRequest<T>(resource: string, params?: object): IPodiumPromise<T> {
@@ -45,15 +48,12 @@ export class PodiumRequest extends Token {
             })
         }
 
-        // transformResponse (data) {
-        //     return convertTime.APIToUTC(JSON.parse(data))
-        // },
-
-        // transformRequest: [function (data, headers) {
-        //   return convertTime.UTCtoAPI(data)
-        // }],
-
-        config = Object.assign({headers: this.makeHeaders()}, config)
+        config = Object.assign({
+            headers: this.makeHeaders(),
+            transformResponse: [(data: string) => {
+                return this.ConvertTime.APIToUTC(JSON.parse(data))
+            }],
+        }, config)
 
         return new Promise((resolve, reject) => {
             return axios(this.makeUrl(resource), config)

@@ -3,7 +3,7 @@ import {Auth} from './api/Auth'
 import {Flex} from './api/Flex'
 import {Users} from './api/Users'
 
-export class Podium {
+export default class Podium {
     private Auth: Auth
     private Users: Users
     private Campaigns: { Flex: Flex }
@@ -15,5 +15,4 @@ export class Podium {
             Flex: new Flex(settings),
         }
     }
-
 }
