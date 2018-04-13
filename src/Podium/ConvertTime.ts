@@ -1,31 +1,37 @@
+enum DIRECTION {
+    TO_UTC,
+    TO_API,
+}
 export class ConvertTime {
+    // tslint:disable-next-line:max-line-length
+    private APIDateRegEx: RegExp = new RegExp('^\\d{4}-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\\d|3[0-1]) ([0-1]?\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$')
 
     public APIToUTC(data: object): object {
         if (typeof data !== 'object') {
             return data
         }
-        return this.loopNestedObj(data, 'toUTC')
+        return this.loopNestedObj(data, DIRECTION.TO_UTC)
     }
 
     public UTCtoAPI(data: object): object {
         if (typeof data !== 'object') {
             return data
         }
-        return this.loopNestedObj(data, 'toAPI')
+        return this.loopNestedObj(data, DIRECTION.TO_API)
     }
 
     // tslint:disable-next-line:no-any
-    private loopNestedObj = (obj: any, method: string) => {
+    private loopNestedObj = (obj: any, method: DIRECTION) => {
         Object.keys(obj).forEach((key) => {
             if (obj[key] && typeof obj[key] === 'object' && !(obj[key] instanceof Date)) {
                 this.loopNestedObj(obj[key], method)
             } else {
-                if ((method === 'toUTC') && (typeof obj[key] === 'string')) {
+                if ((method === DIRECTION.TO_UTC) && (typeof obj[key] === 'string')) {
                     if (this.isAPIDate(obj[key])) {
                         obj[key] = this.toUTC(obj[key])
                     }
                 }
-                if ((method === 'toAPI') && (obj[key] instanceof Date)) {
+                if ((method === DIRECTION.TO_API) && (obj[key] instanceof Date)) {
                     obj[key] = this.toAPI(obj[key])
                 }
             }
@@ -34,9 +40,7 @@ export class ConvertTime {
     }
 
     private isAPIDate = (key: string): boolean => {
-        // tslint:disable-next-line:max-line-length
-        const n = /^\d\d\d\d-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01]) (00|[0-9]|1[0-9]|2[0-3]):([0-9]|[0-5][0-9]):([0-9]|[0-5][0-9])$/g
-        return n.test(key)
+        return this.APIDateRegEx.test(key)
     }
 
     private toUTC = (key: string): Date => {

@@ -1986,8 +1986,15 @@ process.umask = function() { return 0; };
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var DIRECTION;
+(function (DIRECTION) {
+    DIRECTION[DIRECTION["TO_UTC"] = 0] = "TO_UTC";
+    DIRECTION[DIRECTION["TO_API"] = 1] = "TO_API";
+})(DIRECTION || (DIRECTION = {}));
 class ConvertTime {
     constructor() {
+        // tslint:disable-next-line:max-line-length
+        this.APIDateRegEx = new RegExp('^\\d{4}-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\\d|3[0-1]) ([0-1]?\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$');
         // tslint:disable-next-line:no-any
         this.loopNestedObj = (obj, method) => {
             Object.keys(obj).forEach((key) => {
@@ -1995,12 +2002,12 @@ class ConvertTime {
                     this.loopNestedObj(obj[key], method);
                 }
                 else {
-                    if ((method === 'toUTC') && (typeof obj[key] === 'string')) {
+                    if ((method === DIRECTION.TO_UTC) && (typeof obj[key] === 'string')) {
                         if (this.isAPIDate(obj[key])) {
                             obj[key] = this.toUTC(obj[key]);
                         }
                     }
-                    if ((method === 'toAPI') && (obj[key] instanceof Date)) {
+                    if ((method === DIRECTION.TO_API) && (obj[key] instanceof Date)) {
                         obj[key] = this.toAPI(obj[key]);
                     }
                 }
@@ -2008,9 +2015,7 @@ class ConvertTime {
             return obj;
         };
         this.isAPIDate = (key) => {
-            // tslint:disable-next-line:max-line-length
-            const n = /^\d\d\d\d-(0?[1-9]|1[0-2])-(0?[1-9]|[12][0-9]|3[01]) (00|[0-9]|1[0-9]|2[0-3]):([0-9]|[0-5][0-9]):([0-9]|[0-5][0-9])$/g;
-            return n.test(key);
+            return this.APIDateRegEx.test(key);
         };
         this.toUTC = (key) => {
             return new Date(key.replace(' ', 'T') + 'Z');
@@ -2031,13 +2036,13 @@ class ConvertTime {
         if (typeof data !== 'object') {
             return data;
         }
-        return this.loopNestedObj(data, 'toUTC');
+        return this.loopNestedObj(data, DIRECTION.TO_UTC);
     }
     UTCtoAPI(data) {
         if (typeof data !== 'object') {
             return data;
         }
-        return this.loopNestedObj(data, 'toAPI');
+        return this.loopNestedObj(data, DIRECTION.TO_API);
     }
 }
 exports.ConvertTime = ConvertTime;
