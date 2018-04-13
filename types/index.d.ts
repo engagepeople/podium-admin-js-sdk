@@ -29,6 +29,7 @@ export interface IAuthResponse {
     detail: object
     token: string
 }
+
 export interface ILogoutResponse {
     code: API_CODE
     id: object
@@ -38,4 +39,9 @@ export interface ILogoutResponse {
 export const enum API_CODE {
     INVALID_TOKEN = 'INVALID_TOKEN',
     SYSTEM_ACCOUNT_FOUND = 'SYSTEM_ACCOUNT_FOUND',
+}
+
+export const enum PAGE_DIRECTION {
+    ASC = 'asc',
+    DESC = 'desc',
 }

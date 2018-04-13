@@ -5,6 +5,7 @@ export class Users extends PodiumResource {
 
     constructor(settings: ISettings) {
         super('user', settings)
+        this.Legacy = true
     }
 
 }

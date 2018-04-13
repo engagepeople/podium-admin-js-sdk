@@ -2050,6 +2050,75 @@ exports.ConvertTime = ConvertTime;
 
 /***/ }),
 
+/***/ "./src/Podium/Paginator.ts":
+/*!*********************************!*\
+  !*** ./src/Podium/Paginator.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class Paginator {
+    constructor() {
+        this.legacy = false;
+        this.page = 1;
+        this.perPage = 50;
+        this.sortField = 'created_at';
+        this.sortDirection = "desc" /* DESC */;
+    }
+    setLegacyMode(mode) {
+        this.legacy = mode;
+    }
+    setPage(page) {
+        this.page = page;
+        return this;
+    }
+    setPerPage(perPage) {
+        this.perPage = perPage;
+        return "SYSTEM_ACCOUNT_FOUND" /* SYSTEM_ACCOUNT_FOUND */;
+    }
+    setSortField(sortField) {
+        this.sortField = sortField;
+        return this;
+    }
+    setSortDirection(direction) {
+        this.sortDirection = direction;
+        return this;
+    }
+    setSortDesc(direction) {
+        if (direction) {
+            this.sortDirection = "desc" /* DESC */;
+        }
+        else {
+            this.sortDirection = "asc" /* ASC */;
+        }
+        return this;
+    }
+    toParams() {
+        if (this.legacy) {
+            return {
+                count: this.perPage,
+                page: this.page,
+                sorting: { [this.sortField]: this.sortDirection },
+            };
+        }
+        else {
+            return {
+                count: this.perPage,
+                page: this.page,
+                sort_direction: this.sortDirection,
+                sort_field: this.sortField,
+            };
+        }
+    }
+}
+exports.Paginator = Paginator;
+
+
+/***/ }),
+
 /***/ "./src/Podium/PodiumRequest.ts":
 /*!*************************************!*\
   !*** ./src/Podium/PodiumRequest.ts ***!
@@ -2062,14 +2131,20 @@ exports.ConvertTime = ConvertTime;
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 const ConvertTime_1 = __webpack_require__(/*! ./ConvertTime */ "./src/Podium/ConvertTime.ts");
+const Paginator_1 = __webpack_require__(/*! ./Paginator */ "./src/Podium/Paginator.ts");
 const Token_1 = __webpack_require__(/*! ./Token */ "./src/Podium/Token.ts");
 class PodiumRequest extends Token_1.Token {
     constructor(settings) {
         super();
+        this.Legacy = false;
         this.settings = settings;
         this.ConvertTime = new ConvertTime_1.ConvertTime();
     }
-    GetRequest(resource, params) {
+    GetRequest(resource, params = {}) {
+        if (this.Paginator instanceof Paginator_1.Paginator) {
+            this.Paginator.setLegacyMode(this.Legacy);
+            params = Object.assign(params, this.Paginator.toParams());
+        }
         const request = {
             method: 'get',
             params,
@@ -2158,6 +2233,10 @@ class PodiumResource extends PodiumRequest_1.PodiumRequest {
     constructor(resource, settings) {
         super(settings);
         this.resource = resource;
+    }
+    SetPaginator(paginator) {
+        this.Paginator = paginator;
+        return paginator;
     }
     Create(params) {
         return super.PostRequest(this.resource, params);
@@ -2295,6 +2374,7 @@ const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./
 class Users extends PodiumResource_1.PodiumResource {
     constructor(settings) {
         super('user', settings);
+        this.Legacy = true;
     }
 }
 exports.Users = Users;
@@ -2315,6 +2395,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Auth_1 = __webpack_require__(/*! ./api/Auth */ "./src/api/Auth.ts");
 const Flex_1 = __webpack_require__(/*! ./api/Flex */ "./src/api/Flex.ts");
 const Users_1 = __webpack_require__(/*! ./api/Users */ "./src/api/Users.ts");
+const Paginator_1 = __webpack_require__(/*! ./Podium/Paginator */ "./src/Podium/Paginator.ts");
 class Podium {
     constructor(settings) {
         this.Auth = new Auth_1.Auth(settings);
@@ -2322,6 +2403,7 @@ class Podium {
         this.Campaigns = {
             Flex: new Flex_1.Flex(settings),
         };
+        this.Paginator = new Paginator_1.Paginator();
     }
 }
 exports.default = Podium;

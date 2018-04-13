@@ -2,6 +2,7 @@ enum DIRECTION {
     TO_UTC,
     TO_API,
 }
+
 export class ConvertTime {
     // tslint:disable-next-line:max-line-length
     private APIDateRegEx: RegExp = new RegExp('^\\d{4}-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\\d|3[0-1]) ([0-1]?\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$')
