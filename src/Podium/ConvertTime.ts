@@ -6,19 +6,24 @@ enum DIRECTION {
 export class ConvertTime {
     // tslint:disable-next-line:max-line-length
     private APIDateRegEx: RegExp = new RegExp('^\\d{4}-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\\d|3[0-1]) ([0-1]?\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$')
+    private data: object
 
-    public APIToUTC(data: object): object {
-        if (typeof data !== 'object') {
-            return data
-        }
-        return this.loopNestedObj(data, DIRECTION.TO_UTC)
+    constructor(data: object) {
+        this.data = data
     }
 
-    public UTCtoAPI(data: object): object {
-        if (typeof data !== 'object') {
-            return data
+    public ToUTC(): object {
+        if (typeof this.data !== 'object') {
+            return this.data
         }
-        return this.loopNestedObj(data, DIRECTION.TO_API)
+        return this.loopNestedObj(this.data, DIRECTION.TO_UTC)
+    }
+
+    public ToAPI(): object {
+        if (typeof this.data !== 'object') {
+            return this.data
+        }
+        return this.loopNestedObj(this.data, DIRECTION.TO_API)
     }
 
     // tslint:disable-next-line:no-any
@@ -29,11 +34,11 @@ export class ConvertTime {
             } else {
                 if ((method === DIRECTION.TO_UTC) && (typeof obj[key] === 'string')) {
                     if (this.isAPIDate(obj[key])) {
-                        obj[key] = this.toUTC(obj[key])
+                        obj[key] = this.StringToUTC(obj[key])
                     }
                 }
                 if ((method === DIRECTION.TO_API) && (obj[key] instanceof Date)) {
-                    obj[key] = this.toAPI(obj[key])
+                    obj[key] = this.DateToAPI(obj[key])
                 }
             }
         })
@@ -44,11 +49,11 @@ export class ConvertTime {
         return this.APIDateRegEx.test(key)
     }
 
-    private toUTC = (key: string): Date => {
+    private StringToUTC = (key: string): Date => {
         return new Date(key.replace(' ', 'T') + 'Z')
     }
 
-    private toAPI = (key: Date) => {
+    private DateToAPI = (key: Date) => {
         return `${key.getUTCFullYear()}-
         ${this.strPad(key.getUTCMonth() + 1)}-
         ${this.strPad(key.getUTCDate())}

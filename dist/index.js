@@ -2121,7 +2121,7 @@ var DIRECTION;
     DIRECTION[DIRECTION["TO_API"] = 1] = "TO_API";
 })(DIRECTION || (DIRECTION = {}));
 class ConvertTime {
-    constructor() {
+    constructor(data) {
         // tslint:disable-next-line:max-line-length
         this.APIDateRegEx = new RegExp('^\\d{4}-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\\d|3[0-1]) ([0-1]?\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$');
         // tslint:disable-next-line:no-any
@@ -2133,11 +2133,11 @@ class ConvertTime {
                 else {
                     if ((method === DIRECTION.TO_UTC) && (typeof obj[key] === 'string')) {
                         if (this.isAPIDate(obj[key])) {
-                            obj[key] = this.toUTC(obj[key]);
+                            obj[key] = this.StringToUTC(obj[key]);
                         }
                     }
                     if ((method === DIRECTION.TO_API) && (obj[key] instanceof Date)) {
-                        obj[key] = this.toAPI(obj[key]);
+                        obj[key] = this.DateToAPI(obj[key]);
                     }
                 }
             });
@@ -2146,10 +2146,10 @@ class ConvertTime {
         this.isAPIDate = (key) => {
             return this.APIDateRegEx.test(key);
         };
-        this.toUTC = (key) => {
+        this.StringToUTC = (key) => {
             return new Date(key.replace(' ', 'T') + 'Z');
         };
-        this.toAPI = (key) => {
+        this.DateToAPI = (key) => {
             return `${key.getUTCFullYear()}-
         ${this.strPad(key.getUTCMonth() + 1)}-
         ${this.strPad(key.getUTCDate())}
@@ -2160,18 +2160,19 @@ class ConvertTime {
         this.strPad = (n) => {
             return String('00' + n).slice(-2);
         };
+        this.data = data;
     }
-    APIToUTC(data) {
-        if (typeof data !== 'object') {
-            return data;
+    ToUTC() {
+        if (typeof this.data !== 'object') {
+            return this.data;
         }
-        return this.loopNestedObj(data, DIRECTION.TO_UTC);
+        return this.loopNestedObj(this.data, DIRECTION.TO_UTC);
     }
-    UTCtoAPI(data) {
-        if (typeof data !== 'object') {
-            return data;
+    ToAPI() {
+        if (typeof this.data !== 'object') {
+            return this.data;
         }
-        return this.loopNestedObj(data, DIRECTION.TO_API);
+        return this.loopNestedObj(this.data, DIRECTION.TO_API);
     }
 }
 exports.ConvertTime = ConvertTime;
@@ -2267,7 +2268,6 @@ class PodiumRequest extends Token_1.Token {
         super();
         this.Legacy = false;
         this.settings = settings;
-        this.ConvertTime = new ConvertTime_1.ConvertTime();
     }
     GetRequest(id) {
         const request = {
@@ -2331,7 +2331,8 @@ class PodiumRequest extends Token_1.Token {
         config = Object.assign({
             headers: this.makeHeaders(),
             transformResponse: [(data) => {
-                    return this.ConvertTime.APIToUTC(JSON.parse(data));
+                    const convertTime = new ConvertTime_1.ConvertTime(JSON.parse(data));
+                    return convertTime.ToUTC();
                 }],
         }, config);
         return new Promise((resolve, reject) => {

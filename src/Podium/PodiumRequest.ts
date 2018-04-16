@@ -8,12 +8,10 @@ export class PodiumRequest extends Token {
     protected Legacy: boolean = false
     protected Resource: string
     private settings: ISettings
-    private ConvertTime: ConvertTime
 
     constructor(settings: ISettings) {
         super()
         this.settings = settings
-        this.ConvertTime = new ConvertTime()
     }
 
     protected GetRequest<T>(id: number | string): IPodiumPromise<T> {
@@ -86,7 +84,8 @@ export class PodiumRequest extends Token {
         config = Object.assign({
             headers: this.makeHeaders(),
             transformResponse: [(data: string) => {
-                return this.ConvertTime.APIToUTC(JSON.parse(data))
+                const convertTime = new ConvertTime(JSON.parse(data))
+                return convertTime.ToUTC()
             }],
         }, config)
 
