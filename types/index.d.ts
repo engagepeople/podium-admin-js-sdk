@@ -26,7 +26,7 @@ export interface IResponse {
 
 export interface IAuthResponse {
     apiCode: API_CODE
-    detail: object
+    detail: IUser
     token: string
 }
 
@@ -34,6 +34,49 @@ export interface ILogoutResponse {
     code: API_CODE
     id: object
     message: string
+}
+
+export interface IPodiumPaginator<T> {
+    readonly current_page: number
+    readonly data: T[]
+    readonly last_page: number
+    readonly per_page: number
+    readonly to: number
+    readonly total: number
+}
+
+export interface IPodiumModel {
+    readonly id: number
+    readonly created_at: Date
+    readonly updated_at: Date
+}
+
+export interface IUser extends IPodiumModel {
+    first_name: string
+    last_name: string
+    user_account: string
+    email: string
+}
+
+export interface IFlex extends IPodiumModel {
+    readonly id: number
+    program_id: number
+    rules: IFlexRule[]
+}
+
+export interface IFlexRule {
+    id: number
+    name: string
+    reward_id: number
+    slug: string
+}
+
+export interface IReward extends IPodiumModel {
+    choice_selections: [number]
+    incentives: [number]
+    notification_map: [number]
+    product_assets: [number]
+    program_id: number
 }
 
 export const enum API_CODE {

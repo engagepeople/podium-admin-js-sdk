@@ -1,5 +1,5 @@
-import {ISettings} from '../../types'
-import {PodiumResource} from '../Podium/PodiumResource'
+import {ISettings} from '../../../types/index'
+import {PodiumResource} from '../../Podium/PodiumResource'
 
 export class Flex extends PodiumResource {
 

@@ -1,5 +1,5 @@
 import axios, {AxiosError, AxiosRequestConfig} from 'axios'
-import {API_CODE, IAuthResponse, IPodiumErrorResponse, IPodiumPromise, IResponse, ISettings} from '../../types'
+import {API_CODE, IAuthResponse, IPodiumErrorResponse, IPodiumPromise, IResponse, ISettings, IUser} from '../../types'
 import {ConvertTime} from './ConvertTime'
 import {Paginator} from './Paginator'
 import {Token} from './Token'
@@ -37,14 +37,16 @@ export class PodiumRequest extends Token {
         return this.Request(resource, request)
     }
 
-    protected AuthenticateRequest(username: string, password: string): IPodiumPromise<IAuthResponse> {
+    protected AuthenticateRequest(username: string, password: string): IPodiumPromise<IUser> {
         return this.PostRequest<IAuthResponse>('authenticate', {
             password,
             type: 'system',
             user_account: username,
         }).then((response) => {
-            this.SetToken(response.token)
-            return response
+            if (response.apiCode === API_CODE.SYSTEM_ACCOUNT_FOUND) {
+                this.SetToken(response.token)
+                return response.detail
+            }
         })
     }
 

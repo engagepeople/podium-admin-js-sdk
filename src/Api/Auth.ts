@@ -1,4 +1,4 @@
-import {ILogoutResponse, IPodiumPromise, IResponse, ISettings} from '../../types'
+import {IAuthResponse, ILogoutResponse, IPodiumPromise, IResponse, ISettings, IUser} from '../../types'
 import {PodiumResource} from '../Podium/PodiumResource'
 
 export class Auth extends PodiumResource {
@@ -7,7 +7,7 @@ export class Auth extends PodiumResource {
         super('logout', settings)
     }
 
-    public Login(username: string, password: string): IPodiumPromise<IResponse> {
+    public Login(username: string, password: string): IPodiumPromise<IUser> {
         return super.AuthenticateRequest(username, password)
     }
 

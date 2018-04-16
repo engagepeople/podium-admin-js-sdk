@@ -9,8 +9,8 @@ npm install podium-admin-sdk
 
 ## Usage
 ```
-import Podium from 'podium-admin-sdk'
-let podium = new Podium(settings)
+import PodiumAdminSDK from 'podium-admin-sdk'
+let podium = new PodiumAdminSDK(settings)
 
 podium.Auth.login(email, password).then(rsp => {
   console.log(rsp.message)

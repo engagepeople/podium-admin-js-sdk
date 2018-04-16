@@ -1976,6 +1976,109 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./src/Api/Auth.ts":
+/*!*************************!*\
+  !*** ./src/Api/Auth.ts ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
+class Auth extends PodiumResource_1.PodiumResource {
+    constructor(settings) {
+        super('logout', settings);
+    }
+    Login(username, password) {
+        return super.AuthenticateRequest(username, password);
+    }
+    GetToken() {
+        return super.GetToken();
+    }
+    SetToken(token) {
+        return super.SetToken(token);
+    }
+    HasToken() {
+        return super.HasToken();
+    }
+    Logout() {
+        return super.PostRequest(this.resource).then((rsp) => {
+            super.RemoveToken();
+            return rsp;
+        });
+    }
+}
+exports.Auth = Auth;
+
+
+/***/ }),
+
+/***/ "./src/Api/Campaigns/Flex.ts":
+/*!***********************************!*\
+  !*** ./src/Api/Campaigns/Flex.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const PodiumResource_1 = __webpack_require__(/*! ../../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
+class Flex extends PodiumResource_1.PodiumResource {
+    constructor(settings) {
+        super('admin/adhoc_campaign', settings);
+    }
+}
+exports.Flex = Flex;
+
+
+/***/ }),
+
+/***/ "./src/Api/Rewards.ts":
+/*!****************************!*\
+  !*** ./src/Api/Rewards.ts ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
+class Rewards extends PodiumResource_1.PodiumResource {
+    constructor(settings) {
+        super('admin/reward', settings);
+    }
+}
+exports.Rewards = Rewards;
+
+
+/***/ }),
+
+/***/ "./src/Api/Users.ts":
+/*!**************************!*\
+  !*** ./src/Api/Users.ts ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
+class Users extends PodiumResource_1.PodiumResource {
+    constructor(settings) {
+        super('user', settings);
+        this.Legacy = true;
+    }
+}
+exports.Users = Users;
+
+
+/***/ }),
+
 /***/ "./src/Podium/ConvertTime.ts":
 /*!***********************************!*\
   !*** ./src/Podium/ConvertTime.ts ***!
@@ -2164,8 +2267,10 @@ class PodiumRequest extends Token_1.Token {
             type: 'system',
             user_account: username,
         }).then((response) => {
-            this.SetToken(response.token);
-            return response;
+            if (response.apiCode === "SYSTEM_ACCOUNT_FOUND" /* SYSTEM_ACCOUNT_FOUND */) {
+                this.SetToken(response.token);
+                return response.detail;
+            }
         });
     }
     Request(resource, config) {
@@ -2238,6 +2343,9 @@ class PodiumResource extends PodiumRequest_1.PodiumRequest {
         this.Paginator = paginator;
         return paginator;
     }
+    Get(id) {
+        return super.GetRequest(`${this.resource}/${id}`);
+    }
     Create(params) {
         return super.PostRequest(this.resource, params);
     }
@@ -2300,88 +2408,6 @@ exports.Token = Token;
 
 /***/ }),
 
-/***/ "./src/api/Auth.ts":
-/*!*************************!*\
-  !*** ./src/api/Auth.ts ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
-class Auth extends PodiumResource_1.PodiumResource {
-    constructor(settings) {
-        super('logout', settings);
-    }
-    Login(username, password) {
-        return super.AuthenticateRequest(username, password);
-    }
-    GetToken() {
-        return super.GetToken();
-    }
-    SetToken(token) {
-        return super.SetToken(token);
-    }
-    HasToken() {
-        return super.HasToken();
-    }
-    Logout() {
-        return super.PostRequest(this.resource).then((rsp) => {
-            super.RemoveToken();
-            return rsp;
-        });
-    }
-}
-exports.Auth = Auth;
-
-
-/***/ }),
-
-/***/ "./src/api/Flex.ts":
-/*!*************************!*\
-  !*** ./src/api/Flex.ts ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
-class Flex extends PodiumResource_1.PodiumResource {
-    constructor(settings) {
-        super('admin/adhoc_campaign', settings);
-    }
-}
-exports.Flex = Flex;
-
-
-/***/ }),
-
-/***/ "./src/api/Users.ts":
-/*!**************************!*\
-  !*** ./src/api/Users.ts ***!
-  \**************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
-class Users extends PodiumResource_1.PodiumResource {
-    constructor(settings) {
-        super('user', settings);
-        this.Legacy = true;
-    }
-}
-exports.Users = Users;
-
-
-/***/ }),
-
 /***/ "./src/index.ts":
 /*!**********************!*\
   !*** ./src/index.ts ***!
@@ -2392,17 +2418,19 @@ exports.Users = Users;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Auth_1 = __webpack_require__(/*! ./api/Auth */ "./src/api/Auth.ts");
-const Flex_1 = __webpack_require__(/*! ./api/Flex */ "./src/api/Flex.ts");
-const Users_1 = __webpack_require__(/*! ./api/Users */ "./src/api/Users.ts");
+const Auth_1 = __webpack_require__(/*! ./Api/Auth */ "./src/Api/Auth.ts");
+const Flex_1 = __webpack_require__(/*! ./Api/Campaigns/Flex */ "./src/Api/Campaigns/Flex.ts");
+const Rewards_1 = __webpack_require__(/*! ./Api/Rewards */ "./src/Api/Rewards.ts");
+const Users_1 = __webpack_require__(/*! ./Api/Users */ "./src/Api/Users.ts");
 const Paginator_1 = __webpack_require__(/*! ./Podium/Paginator */ "./src/Podium/Paginator.ts");
 class Podium {
     constructor(settings) {
         this.Auth = new Auth_1.Auth(settings);
-        this.Users = new Users_1.Users(settings);
         this.Campaigns = {
             Flex: new Flex_1.Flex(settings),
         };
+        this.Rewards = new Rewards_1.Rewards(settings);
+        this.Users = new Users_1.Users(settings);
         this.Paginator = new Paginator_1.Paginator();
     }
 }
