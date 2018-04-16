@@ -4,7 +4,8 @@ import {PodiumResource} from '../Podium/PodiumResource'
 export class Rewards extends PodiumResource {
 
     constructor(settings: ISettings) {
-        super('admin/reward', settings)
+        super(settings)
+        super.Resource = 'admin/reward'
     }
 
 }

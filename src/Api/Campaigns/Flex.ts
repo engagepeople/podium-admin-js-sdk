@@ -4,7 +4,8 @@ import {PodiumResource} from '../../Podium/PodiumResource'
 export class Flex extends PodiumResource {
 
     constructor(settings: ISettings) {
-        super('admin/adhoc_campaign', settings)
+        super(settings)
+        super.Resource = 'admin/adhoc_campaign'
     }
 
 }

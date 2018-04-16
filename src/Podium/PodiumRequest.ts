@@ -6,7 +6,7 @@ import {Token} from './Token'
 
 export class PodiumRequest extends Token {
     protected Legacy: boolean = false
-    protected Paginator: Paginator
+    protected Resource: string
     private settings: ISettings
     private ConvertTime: ConvertTime
 
@@ -16,29 +16,52 @@ export class PodiumRequest extends Token {
         this.ConvertTime = new ConvertTime()
     }
 
-    protected GetRequest<T>(resource: string, params: object = {}): IPodiumPromise<T> {
-        if (this.Paginator instanceof Paginator) {
-            this.Paginator.setLegacyMode(this.Legacy)
-            params = Object.assign(params, this.Paginator.toParams())
+    protected GetRequest<T>(id: number | string): IPodiumPromise<T> {
+        const request: AxiosRequestConfig = {
+            method: 'get',
+        }
+        return this.Request(request, `${this.makeURL()}/${id}`)
+    }
+
+    protected DeleteRequest<T>(id: number | string): IPodiumPromise<T> {
+        const request: AxiosRequestConfig = {
+            method: 'delete',
+        }
+        return this.Request(request, this.makeURL(id))
+    }
+
+    protected ListRequest<T>(params: object = {}, paginator: Paginator): IPodiumPromise<T> {
+        if (paginator instanceof Paginator) {
+            paginator.setLegacyMode(this.Legacy)
+            params = Object.assign(params, paginator.toParams())
         }
 
         const request: AxiosRequestConfig = {
             method: 'get',
             params,
         }
-        return this.Request(resource, request)
+        return this.Request(request, this.makeURL())
     }
 
-    protected PostRequest<T>(resource: string, data?: object): IPodiumPromise<T> {
+    protected PostRequest<T>(data?: object): IPodiumPromise<T> {
         const request: AxiosRequestConfig = {
             data,
             method: 'post',
         }
-        return this.Request(resource, request)
+        return this.Request(request, this.makeURL())
+    }
+
+    protected UpdateRequest<T>(id: number | string, data: object): IPodiumPromise<T> {
+        const request: AxiosRequestConfig = {
+            data,
+            method: 'put',
+        }
+        return this.Request(request, this.makeURL(id))
     }
 
     protected AuthenticateRequest(username: string, password: string): IPodiumPromise<IUser> {
-        return this.PostRequest<IAuthResponse>('authenticate', {
+        this.Resource = 'authenticate'
+        return this.PostRequest<IAuthResponse>({
             password,
             type: 'system',
             user_account: username,
@@ -50,8 +73,11 @@ export class PodiumRequest extends Token {
         })
     }
 
-    protected Request<T>(resource: string, config: AxiosRequestConfig): IPodiumPromise<T> {
-        if ((resource !== 'authenticate') && !this.HasToken()) { // Don't even make the request
+    protected Request<T>(config: AxiosRequestConfig, url?: string): IPodiumPromise<T> {
+        if (!url) {
+            url = this.makeURL()
+        }
+        if ((this.Resource !== 'authenticate') && !this.HasToken()) { // Don't even make the request
             return new Promise((resolve, reject) => {
                 reject(API_CODE.INVALID_TOKEN)
             })
@@ -65,7 +91,7 @@ export class PodiumRequest extends Token {
         }, config)
 
         return new Promise((resolve, reject) => {
-            return axios(this.makeUrl(resource), config)
+            return axios(url, config)
                 .then((response) => {
                     resolve(response.data)
                 })
@@ -76,8 +102,12 @@ export class PodiumRequest extends Token {
         })
     }
 
-    private makeUrl(path: string): string {
-        return this.settings.endpoint + path
+    private makeURL(id?: number | string): string {
+        let build =  this.settings.endpoint + this.Resource
+        if (id) {
+            build += `/${id}`
+        }
+        return build
     }
 
     private makeHeaders(): object {

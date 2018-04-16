@@ -4,28 +4,28 @@ import {PodiumRequest} from './PodiumRequest'
 
 export class PodiumResource extends PodiumRequest {
 
-    public resource: string
-
-    constructor(resource: string, settings: ISettings) {
+    constructor(settings: ISettings) {
         super(settings)
-        this.resource = resource
     }
 
-    public SetPaginator(paginator: Paginator): Paginator {
-        this.Paginator = paginator
-        return paginator
+    public Get<T>(id: number|string): IPodiumPromise<T> {
+        return super.GetRequest(id)
     }
 
-    public Get<T>(id: number): IPodiumPromise<T> {
-        return super.GetRequest(`${this.resource}/${id}`)
+    public List<T>(params?: object, paginator?: Paginator): IPodiumPromise<IPodiumPaginator<T>> {
+        return super.ListRequest(params, paginator)
     }
 
     public Create<T>(params?: object): IPodiumPromise<T> {
-        return super.PostRequest(this.resource, params)
+        return super.PostRequest(params)
     }
 
-    public List<T>(params?: object): IPodiumPromise<IPodiumPaginator<T>> {
-        return super.GetRequest(this.resource, params)
+    public Update<T>(id: number|string, params?: object): IPodiumPromise<T> {
+        return super.UpdateRequest(id, params)
+    }
+
+    public Delete<T>(id: number|string): IPodiumPromise<T> {
+        return super.DeleteRequest(id)
     }
 
 }

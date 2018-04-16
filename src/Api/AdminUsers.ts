@@ -4,8 +4,9 @@ import {PodiumResource} from '../Podium/PodiumResource'
 export class Users extends PodiumResource {
 
     constructor(settings: ISettings) {
-        super('user', settings)
-        this.Legacy = true
+        super(settings)
+        super.Resource = 'user'
+        super.Legacy = true
     }
 
 }

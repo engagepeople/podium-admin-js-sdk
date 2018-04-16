@@ -1976,10 +1976,10 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ "./src/Api/Auth.ts":
-/*!*************************!*\
-  !*** ./src/Api/Auth.ts ***!
-  \*************************/
+/***/ "./src/Api/AdminAuth.ts":
+/*!******************************!*\
+  !*** ./src/Api/AdminAuth.ts ***!
+  \******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1989,7 +1989,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
 class Auth extends PodiumResource_1.PodiumResource {
     constructor(settings) {
-        super('logout', settings);
+        super(settings);
+        super.Resource = 'logout';
     }
     Login(username, password) {
         return super.AuthenticateRequest(username, password);
@@ -2004,13 +2005,36 @@ class Auth extends PodiumResource_1.PodiumResource {
         return super.HasToken();
     }
     Logout() {
-        return super.PostRequest(this.resource).then((rsp) => {
+        return super.PostRequest().then((rsp) => {
             super.RemoveToken();
             return rsp;
         });
     }
 }
 exports.Auth = Auth;
+
+
+/***/ }),
+
+/***/ "./src/Api/AdminUsers.ts":
+/*!*******************************!*\
+  !*** ./src/Api/AdminUsers.ts ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
+class Users extends PodiumResource_1.PodiumResource {
+    constructor(settings) {
+        super(settings);
+        super.Resource = 'user';
+        super.Legacy = true;
+    }
+}
+exports.Users = Users;
 
 
 /***/ }),
@@ -2028,10 +2052,33 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const PodiumResource_1 = __webpack_require__(/*! ../../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
 class Flex extends PodiumResource_1.PodiumResource {
     constructor(settings) {
-        super('admin/adhoc_campaign', settings);
+        super(settings);
+        super.Resource = 'admin/adhoc_campaign';
     }
 }
 exports.Flex = Flex;
+
+
+/***/ }),
+
+/***/ "./src/Api/Campaigns/Incentive.ts":
+/*!****************************************!*\
+  !*** ./src/Api/Campaigns/Incentive.ts ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const PodiumResource_1 = __webpack_require__(/*! ../../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
+class Incentive extends PodiumResource_1.PodiumResource {
+    constructor(settings) {
+        super(settings);
+        super.Resource = 'admin/incentive';
+    }
+}
+exports.Incentive = Incentive;
 
 
 /***/ }),
@@ -2049,32 +2096,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
 class Rewards extends PodiumResource_1.PodiumResource {
     constructor(settings) {
-        super('admin/reward', settings);
+        super(settings);
+        super.Resource = 'admin/reward';
     }
 }
 exports.Rewards = Rewards;
-
-
-/***/ }),
-
-/***/ "./src/Api/Users.ts":
-/*!**************************!*\
-  !*** ./src/Api/Users.ts ***!
-  \**************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
-class Users extends PodiumResource_1.PodiumResource {
-    constructor(settings) {
-        super('user', settings);
-        this.Legacy = true;
-    }
-}
-exports.Users = Users;
 
 
 /***/ }),
@@ -2243,26 +2269,46 @@ class PodiumRequest extends Token_1.Token {
         this.settings = settings;
         this.ConvertTime = new ConvertTime_1.ConvertTime();
     }
-    GetRequest(resource, params = {}) {
-        if (this.Paginator instanceof Paginator_1.Paginator) {
-            this.Paginator.setLegacyMode(this.Legacy);
-            params = Object.assign(params, this.Paginator.toParams());
+    GetRequest(id) {
+        const request = {
+            method: 'get',
+        };
+        return this.Request(request, `${this.makeURL()}/${id}`);
+    }
+    DeleteRequest(id) {
+        const request = {
+            method: 'delete',
+        };
+        return this.Request(request, this.makeURL(id));
+    }
+    ListRequest(params = {}, paginator) {
+        if (paginator instanceof Paginator_1.Paginator) {
+            paginator.setLegacyMode(this.Legacy);
+            params = Object.assign(params, paginator.toParams());
         }
         const request = {
             method: 'get',
             params,
         };
-        return this.Request(resource, request);
+        return this.Request(request, this.makeURL());
     }
-    PostRequest(resource, data) {
+    PostRequest(data) {
         const request = {
             data,
             method: 'post',
         };
-        return this.Request(resource, request);
+        return this.Request(request, this.makeURL());
+    }
+    UpdateRequest(id, data) {
+        const request = {
+            data,
+            method: 'put',
+        };
+        return this.Request(request, this.makeURL(id));
     }
     AuthenticateRequest(username, password) {
-        return this.PostRequest('authenticate', {
+        this.Resource = 'authenticate';
+        return this.PostRequest({
             password,
             type: 'system',
             user_account: username,
@@ -2273,8 +2319,11 @@ class PodiumRequest extends Token_1.Token {
             }
         });
     }
-    Request(resource, config) {
-        if ((resource !== 'authenticate') && !this.HasToken()) { // Don't even make the request
+    Request(config, url) {
+        if (!url) {
+            url = this.makeURL();
+        }
+        if ((this.Resource !== 'authenticate') && !this.HasToken()) { // Don't even make the request
             return new Promise((resolve, reject) => {
                 reject("INVALID_TOKEN" /* INVALID_TOKEN */);
             });
@@ -2286,7 +2335,7 @@ class PodiumRequest extends Token_1.Token {
                 }],
         }, config);
         return new Promise((resolve, reject) => {
-            return axios_1.default(this.makeUrl(resource), config)
+            return axios_1.default(url, config)
                 .then((response) => {
                 resolve(response.data);
             })
@@ -2296,8 +2345,12 @@ class PodiumRequest extends Token_1.Token {
             });
         });
     }
-    makeUrl(path) {
-        return this.settings.endpoint + path;
+    makeURL(id) {
+        let build = this.settings.endpoint + this.Resource;
+        if (id) {
+            build += `/${id}`;
+        }
+        return build;
     }
     makeHeaders() {
         if (this.GetToken()) {
@@ -2335,22 +2388,23 @@ exports.PodiumRequest = PodiumRequest;
 Object.defineProperty(exports, "__esModule", { value: true });
 const PodiumRequest_1 = __webpack_require__(/*! ./PodiumRequest */ "./src/Podium/PodiumRequest.ts");
 class PodiumResource extends PodiumRequest_1.PodiumRequest {
-    constructor(resource, settings) {
+    constructor(settings) {
         super(settings);
-        this.resource = resource;
-    }
-    SetPaginator(paginator) {
-        this.Paginator = paginator;
-        return paginator;
     }
     Get(id) {
-        return super.GetRequest(`${this.resource}/${id}`);
+        return super.GetRequest(id);
+    }
+    List(params, paginator) {
+        return super.ListRequest(params, paginator);
     }
     Create(params) {
-        return super.PostRequest(this.resource, params);
+        return super.PostRequest(params);
     }
-    List(params) {
-        return super.GetRequest(this.resource, params);
+    Update(id, params) {
+        return super.UpdateRequest(id, params);
+    }
+    Delete(id) {
+        return super.DeleteRequest(id);
     }
 }
 exports.PodiumResource = PodiumResource;
@@ -2418,19 +2472,22 @@ exports.Token = Token;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Auth_1 = __webpack_require__(/*! ./Api/Auth */ "./src/Api/Auth.ts");
+const AdminAuth_1 = __webpack_require__(/*! ./Api/AdminAuth */ "./src/Api/AdminAuth.ts");
+const AdminUsers_1 = __webpack_require__(/*! ./Api/AdminUsers */ "./src/Api/AdminUsers.ts");
 const Flex_1 = __webpack_require__(/*! ./Api/Campaigns/Flex */ "./src/Api/Campaigns/Flex.ts");
+const Incentive_1 = __webpack_require__(/*! ./Api/Campaigns/Incentive */ "./src/Api/Campaigns/Incentive.ts");
 const Rewards_1 = __webpack_require__(/*! ./Api/Rewards */ "./src/Api/Rewards.ts");
-const Users_1 = __webpack_require__(/*! ./Api/Users */ "./src/Api/Users.ts");
 const Paginator_1 = __webpack_require__(/*! ./Podium/Paginator */ "./src/Podium/Paginator.ts");
 class Podium {
     constructor(settings) {
-        this.Auth = new Auth_1.Auth(settings);
+        this.Auth = new AdminAuth_1.Auth(settings);
         this.Campaigns = {
             Flex: new Flex_1.Flex(settings),
+            Incentive: new Incentive_1.Incentive(settings),
         };
+        this.Users = new AdminUsers_1.Users(settings);
         this.Rewards = new Rewards_1.Rewards(settings);
-        this.Users = new Users_1.Users(settings);
+        // this.Users = new Users(settings)
         this.Paginator = new Paginator_1.Paginator();
     }
 }
