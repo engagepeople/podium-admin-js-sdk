@@ -1990,10 +1990,19 @@ const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./
 class Auth extends PodiumResource_1.PodiumResource {
     constructor(settings) {
         super(settings);
-        super.Resource = 'logout';
     }
     Login(username, password) {
-        return super.AuthenticateRequest(username, password);
+        super.Resource = 'authenticate';
+        return super.PostRequest({
+            password,
+            type: 'system',
+            user_account: username,
+        }).then((response) => {
+            if (response.apiCode === "SYSTEM_ACCOUNT_FOUND" /* SYSTEM_ACCOUNT_FOUND */) {
+                this.SetToken(response.token);
+                return response.detail;
+            }
+        });
     }
     GetToken() {
         return super.GetToken();
@@ -2005,6 +2014,7 @@ class Auth extends PodiumResource_1.PodiumResource {
         return super.HasToken();
     }
     Logout() {
+        super.Resource = 'logout';
         return super.PostRequest().then((rsp) => {
             super.RemoveToken();
             return rsp;
@@ -2032,6 +2042,9 @@ class Users extends PodiumResource_1.PodiumResource {
         super(settings);
         super.Resource = 'user';
         super.Legacy = true;
+    }
+    List(params, paginator) {
+        return super.List(params, paginator);
     }
 }
 exports.Users = Users;
@@ -2160,22 +2173,63 @@ class ConvertTime {
         this.strPad = (n) => {
             return String('00' + n).slice(-2);
         };
+        if (typeof data !== 'object') {
+            throw new Error('Convert Time must accept an object');
+        }
         this.data = data;
     }
     ToUTC() {
-        if (typeof this.data !== 'object') {
-            return this.data;
-        }
         return this.loopNestedObj(this.data, DIRECTION.TO_UTC);
     }
     ToAPI() {
-        if (typeof this.data !== 'object') {
-            return this.data;
-        }
         return this.loopNestedObj(this.data, DIRECTION.TO_API);
     }
 }
 exports.ConvertTime = ConvertTime;
+
+
+/***/ }),
+
+/***/ "./src/Podium/Filter.ts":
+/*!******************************!*\
+  !*** ./src/Podium/Filter.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class Filter {
+    constructor(values) {
+        this.legacy = false;
+        this.values = values;
+    }
+    isLegacyMode() {
+        return this.legacy;
+    }
+    setLegacyMode(mode) {
+        this.legacy = mode;
+    }
+    setValues(values) {
+        this.values = values;
+        return this.values;
+    }
+    getValues() {
+        return this.values;
+    }
+    toParams() {
+        if (this.legacy) {
+            return {
+                filter: this.values,
+            };
+        }
+        else {
+            return this.values;
+        }
+    }
+}
+exports.Filter = Filter;
 
 
 /***/ }),
@@ -2261,8 +2315,9 @@ exports.Paginator = Paginator;
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 const ConvertTime_1 = __webpack_require__(/*! ./ConvertTime */ "./src/Podium/ConvertTime.ts");
-const Paginator_1 = __webpack_require__(/*! ./Paginator */ "./src/Podium/Paginator.ts");
+const Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Podium/Filter.ts");
 const Token_1 = __webpack_require__(/*! ./Token */ "./src/Podium/Token.ts");
+const Paginator_1 = __webpack_require__(/*! ./Paginator */ "./src/Podium/Paginator.ts");
 class PodiumRequest extends Token_1.Token {
     constructor(settings) {
         super();
@@ -2281,10 +2336,15 @@ class PodiumRequest extends Token_1.Token {
         };
         return this.Request(request, this.makeURL(id));
     }
-    ListRequest(params = {}, paginator) {
+    ListRequest(filter, paginator) {
+        let params = {};
         if (paginator instanceof Paginator_1.Paginator) {
             paginator.setLegacyMode(this.Legacy);
             params = Object.assign(params, paginator.toParams());
+        }
+        if (filter instanceof Filter_1.Filter) {
+            filter.setLegacyMode(this.Legacy);
+            params = Object.assign(params, filter.toParams());
         }
         const request = {
             method: 'get',
@@ -2292,7 +2352,7 @@ class PodiumRequest extends Token_1.Token {
         };
         return this.Request(request, this.makeURL());
     }
-    PostRequest(data) {
+    PostRequest(data = {}) {
         const request = {
             data,
             method: 'post',
@@ -2305,19 +2365,6 @@ class PodiumRequest extends Token_1.Token {
             method: 'put',
         };
         return this.Request(request, this.makeURL(id));
-    }
-    AuthenticateRequest(username, password) {
-        this.Resource = 'authenticate';
-        return this.PostRequest({
-            password,
-            type: 'system',
-            user_account: username,
-        }).then((response) => {
-            if (response.apiCode === "SYSTEM_ACCOUNT_FOUND" /* SYSTEM_ACCOUNT_FOUND */) {
-                this.SetToken(response.token);
-                return response.detail;
-            }
-        });
     }
     Request(config, url) {
         if (!url) {
@@ -2478,7 +2525,6 @@ const AdminUsers_1 = __webpack_require__(/*! ./Api/AdminUsers */ "./src/Api/Admi
 const Flex_1 = __webpack_require__(/*! ./Api/Campaigns/Flex */ "./src/Api/Campaigns/Flex.ts");
 const Incentive_1 = __webpack_require__(/*! ./Api/Campaigns/Incentive */ "./src/Api/Campaigns/Incentive.ts");
 const Rewards_1 = __webpack_require__(/*! ./Api/Rewards */ "./src/Api/Rewards.ts");
-const Paginator_1 = __webpack_require__(/*! ./Podium/Paginator */ "./src/Podium/Paginator.ts");
 class Podium {
     constructor(settings) {
         this.Auth = new AdminAuth_1.Auth(settings);
@@ -2488,11 +2534,13 @@ class Podium {
         };
         this.Users = new AdminUsers_1.Users(settings);
         this.Rewards = new Rewards_1.Rewards(settings);
-        // this.Users = new Users(settings)
-        this.Paginator = new Paginator_1.Paginator();
     }
 }
-exports.default = Podium;
+exports.Podium = Podium;
+var Paginator_1 = __webpack_require__(/*! ./Podium/Paginator */ "./src/Podium/Paginator.ts");
+exports.PodiumPaginator = Paginator_1.Paginator;
+var Filter_1 = __webpack_require__(/*! ./Podium/Filter */ "./src/Podium/Filter.ts");
+exports.PodiumFilter = Filter_1.Filter;
 
 
 /***/ })

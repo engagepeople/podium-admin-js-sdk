@@ -1,8 +1,9 @@
 import axios, {AxiosError, AxiosRequestConfig} from 'axios'
-import {API_CODE, IAuthResponse, IPodiumErrorResponse, IPodiumPromise, IResponse, ISettings, IUser} from '../../types'
+import {API_CODE, IPodiumErrorResponse, IPodiumPromise, IResponse, ISettings } from '../../types'
 import {ConvertTime} from './ConvertTime'
-import {Paginator} from './Paginator'
+import {Filter} from './Filter'
 import {Token} from './Token'
+import {Paginator} from './Paginator'
 
 export class PodiumRequest extends Token {
     protected Legacy: boolean = false
@@ -28,10 +29,15 @@ export class PodiumRequest extends Token {
         return this.Request(request, this.makeURL(id))
     }
 
-    protected ListRequest<T>(params: object = {}, paginator: Paginator): IPodiumPromise<T> {
+    protected ListRequest<T, F>(filter: Filter<F>, paginator: Paginator): IPodiumPromise<T> {
+        let params = {}
         if (paginator instanceof Paginator) {
             paginator.setLegacyMode(this.Legacy)
             params = Object.assign(params, paginator.toParams())
+        }
+        if (filter instanceof Filter) {
+            filter.setLegacyMode(this.Legacy)
+            params = Object.assign(params, filter.toParams())
         }
 
         const request: AxiosRequestConfig = {
@@ -41,7 +47,7 @@ export class PodiumRequest extends Token {
         return this.Request(request, this.makeURL())
     }
 
-    protected PostRequest<T>(data?: object): IPodiumPromise<T> {
+    protected PostRequest<T>(data: object = {}): IPodiumPromise<T> {
         const request: AxiosRequestConfig = {
             data,
             method: 'post',
@@ -55,20 +61,6 @@ export class PodiumRequest extends Token {
             method: 'put',
         }
         return this.Request(request, this.makeURL(id))
-    }
-
-    protected AuthenticateRequest(username: string, password: string): IPodiumPromise<IUser> {
-        this.Resource = 'authenticate'
-        return this.PostRequest<IAuthResponse>({
-            password,
-            type: 'system',
-            user_account: username,
-        }).then((response) => {
-            if (response.apiCode === API_CODE.SYSTEM_ACCOUNT_FOUND) {
-                this.SetToken(response.token)
-                return response.detail
-            }
-        })
     }
 
     protected Request<T>(config: AxiosRequestConfig, url?: string): IPodiumPromise<T> {
@@ -102,7 +94,7 @@ export class PodiumRequest extends Token {
     }
 
     private makeURL(id?: number | string): string {
-        let build =  this.settings.endpoint + this.Resource
+        let build = this.settings.endpoint + this.Resource
         if (id) {
             build += `/${id}`
         }

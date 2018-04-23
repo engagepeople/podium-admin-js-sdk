@@ -10,7 +10,11 @@
         "typedef": [true, "call-signature", "parameter", "member-variable-declaration"],
         "no-any": true,
         "no-namespace": false,
-        "no-console": false
+        "no-console": false,
+        "ordered-imports": [true, {
+            "import-sources-order": "any",
+            "named-imports-order": "case-insensitive"
+        }]
     },
     "rulesDirectory": []
 }

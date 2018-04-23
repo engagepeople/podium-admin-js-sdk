@@ -9,25 +9,22 @@ export class ConvertTime {
     private data: object
 
     constructor(data: object) {
+        if (typeof data !== 'object') {
+            throw new Error('Convert Time must accept an object')
+        }
         this.data = data
     }
 
     public ToUTC(): object {
-        if (typeof this.data !== 'object') {
-            return this.data
-        }
         return this.loopNestedObj(this.data, DIRECTION.TO_UTC)
     }
 
     public ToAPI(): object {
-        if (typeof this.data !== 'object') {
-            return this.data
-        }
         return this.loopNestedObj(this.data, DIRECTION.TO_API)
     }
 
     // tslint:disable-next-line:no-any
-    private loopNestedObj = (obj: any, method: DIRECTION) => {
+    private loopNestedObj = (obj: any, method: DIRECTION): any => {
         Object.keys(obj).forEach((key) => {
             if (obj[key] && typeof obj[key] === 'object' && !(obj[key] instanceof Date)) {
                 this.loopNestedObj(obj[key], method)
@@ -53,7 +50,7 @@ export class ConvertTime {
         return new Date(key.replace(' ', 'T') + 'Z')
     }
 
-    private DateToAPI = (key: Date) => {
+    private DateToAPI = (key: Date): string => {
         return `${key.getUTCFullYear()}-
         ${this.strPad(key.getUTCMonth() + 1)}-
         ${this.strPad(key.getUTCDate())}

@@ -1,6 +1,7 @@
 import {IPodiumPaginator, IPodiumPromise, ISettings} from '../../types'
-import {Paginator} from './Paginator'
 import {PodiumRequest} from './PodiumRequest'
+import {Filter} from './Filter'
+import {Paginator} from './Paginator'
 
 export class PodiumResource extends PodiumRequest {
 
@@ -12,7 +13,7 @@ export class PodiumResource extends PodiumRequest {
         return super.GetRequest(id)
     }
 
-    public List<T>(params?: object, paginator?: Paginator): IPodiumPromise<IPodiumPaginator<T>> {
+    public List<T, F>(params?: Filter<F>, paginator?: | Paginator): IPodiumPromise<IPodiumPaginator<T>> {
         return super.ListRequest(params, paginator)
     }
 

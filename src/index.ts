@@ -1,17 +1,16 @@
+// tslint:disable:max-classes-per-file
 import {ISettings} from '../types'
 import {Auth} from './Api/AdminAuth'
 import {Users} from './Api/AdminUsers'
 import {Flex} from './Api/Campaigns/Flex'
 import {Incentive} from './Api/Campaigns/Incentive'
 import {Rewards} from './Api/Rewards'
-import {Paginator} from './Podium/Paginator'
 
-export default class Podium {
+export class Podium {
     private Auth: Auth
     private Users: Users
     private Rewards: Rewards
     private Campaigns: { Flex: Flex, Incentive: Incentive }
-    private Paginator: Paginator
 
     constructor(settings: ISettings) {
         this.Auth = new Auth(settings)
@@ -21,7 +20,8 @@ export default class Podium {
         }
         this.Users = new Users(settings)
         this.Rewards = new Rewards(settings)
-        // this.Users = new Users(settings)
-        this.Paginator = new Paginator()
     }
 }
+
+export { Paginator as PodiumPaginator } from './Podium/Paginator'
+export { Filter as PodiumFilter } from './Podium/Filter'

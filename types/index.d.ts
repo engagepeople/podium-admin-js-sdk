@@ -71,6 +71,14 @@ export interface IFlexRule {
     slug: string
 }
 
+export interface IUserFilter {
+    customer_id?: number
+    search?: string
+    email?: string
+    group_ids?: number
+    only_managers?: boolean
+}
+
 export interface IReward extends IPodiumModel {
     choice_selections: [number]
     incentives: [number]
@@ -82,6 +90,7 @@ export interface IReward extends IPodiumModel {
 export const enum API_CODE {
     INVALID_TOKEN = 'INVALID_TOKEN',
     SYSTEM_ACCOUNT_FOUND = 'SYSTEM_ACCOUNT_FOUND',
+    SYSTEM_ACCOUNT_NOT_FOUND = 'SYSTEM_ACCOUNT_NOT_FOUND',
 }
 
 export const enum PAGE_DIRECTION {
