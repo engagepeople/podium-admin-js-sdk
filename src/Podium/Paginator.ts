@@ -1,11 +1,11 @@
-import {PAGE_DIRECTION} from '../../types'
+import {SORT_DIRECTION, SORT_FIELD} from '../../types'
 import {ListQuery} from './ListQuery'
 
 export class Paginator extends ListQuery {
     private page: number = 1
     private perPage: number = 50
-    private sortField: string = 'created_at'
-    private sortDirection: PAGE_DIRECTION = PAGE_DIRECTION.DESC
+    private sortField: SORT_FIELD = SORT_FIELD.CREATED_AT
+    private sortDirection: SORT_DIRECTION = SORT_DIRECTION.DESC
 
     public setPage(page: number): Paginator {
         this.page = page
@@ -17,21 +17,27 @@ export class Paginator extends ListQuery {
         return this
     }
 
-    public setSortField(sortField: string): Paginator {
-        this.sortField = sortField
+    public setSort(field: SORT_FIELD, direction: SORT_DIRECTION): Paginator {
+        this.sortField = field
+        this.sortDirection = direction
         return this
     }
 
-    public setSortDirection(direction: PAGE_DIRECTION): Paginator {
+    public setSortField(field: SORT_FIELD): Paginator {
+        this.sortField = field
+        return this
+    }
+
+    public setSortDirection(direction: SORT_DIRECTION): Paginator {
         this.sortDirection = direction
         return this
     }
 
     public setSortDesc(direction: boolean): Paginator {
         if (direction) {
-            this.sortDirection = PAGE_DIRECTION.DESC
+            this.sortDirection = SORT_DIRECTION.DESC
         } else {
-            this.sortDirection = PAGE_DIRECTION.ASC
+            this.sortDirection = SORT_DIRECTION.ASC
         }
         return this
     }

@@ -1,7 +1,5 @@
-import {IPodiumPaginator, IPodiumPromise, ISettings, IUserFilter} from '../../types'
-import {Filter} from '../Podium/Filter'
+import {ISettings} from '../../types'
 import {PodiumResource} from '../Podium/PodiumResource'
-import {Paginator} from '../Podium/Paginator'
 
 export class Users extends PodiumResource {
 
@@ -10,9 +8,4 @@ export class Users extends PodiumResource {
         super.Resource = 'user'
         super.Legacy = true
     }
-
-    public List<T, F>(params?: Filter<F>, paginator?: Paginator): IPodiumPromise<IPodiumPaginator<T>> {
-        return super.List(params, paginator)
-    }
-
 }

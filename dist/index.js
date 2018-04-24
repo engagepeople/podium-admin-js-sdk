@@ -2043,9 +2043,6 @@ class Users extends PodiumResource_1.PodiumResource {
         super.Resource = 'user';
         super.Legacy = true;
     }
-    List(params, paginator) {
-        return super.List(params, paginator);
-    }
 }
 exports.Users = Users;
 
@@ -2092,28 +2089,6 @@ class Incentive extends PodiumResource_1.PodiumResource {
     }
 }
 exports.Incentive = Incentive;
-
-
-/***/ }),
-
-/***/ "./src/Api/Rewards.ts":
-/*!****************************!*\
-  !*** ./src/Api/Rewards.ts ***!
-  \****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
-class Rewards extends PodiumResource_1.PodiumResource {
-    constructor(settings) {
-        super(settings);
-        super.Resource = 'admin/reward';
-    }
-}
-exports.Rewards = Rewards;
 
 
 /***/ }),
@@ -2271,7 +2246,7 @@ class Paginator extends ListQuery_1.ListQuery {
         super(...arguments);
         this.page = 1;
         this.perPage = 50;
-        this.sortField = 'created_at';
+        this.sortField = "created_at" /* CREATED_AT */;
         this.sortDirection = "desc" /* DESC */;
     }
     setPage(page) {
@@ -2282,8 +2257,13 @@ class Paginator extends ListQuery_1.ListQuery {
         this.perPage = perPage;
         return this;
     }
-    setSortField(sortField) {
-        this.sortField = sortField;
+    setSort(field, direction) {
+        this.sortField = field;
+        this.sortDirection = direction;
+        return this;
+    }
+    setSortField(field) {
+        this.sortField = field;
         return this;
     }
     setSortDirection(direction) {
@@ -2556,7 +2536,7 @@ const AdminAuth_1 = __webpack_require__(/*! ./Api/AdminAuth */ "./src/Api/AdminA
 const AdminUsers_1 = __webpack_require__(/*! ./Api/AdminUsers */ "./src/Api/AdminUsers.ts");
 const Flex_1 = __webpack_require__(/*! ./Api/Campaigns/Flex */ "./src/Api/Campaigns/Flex.ts");
 const Incentive_1 = __webpack_require__(/*! ./Api/Campaigns/Incentive */ "./src/Api/Campaigns/Incentive.ts");
-const Rewards_1 = __webpack_require__(/*! ./Api/Rewards */ "./src/Api/Rewards.ts");
+const PodiumResource_1 = __webpack_require__(/*! ./Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
 class Podium {
     constructor(settings) {
         this.Auth = new AdminAuth_1.Auth(settings);
@@ -2565,7 +2545,7 @@ class Podium {
             Incentive: new Incentive_1.Incentive(settings),
         };
         this.Users = new AdminUsers_1.Users(settings);
-        this.Rewards = new Rewards_1.Rewards(settings);
+        this.Rewards = new PodiumResource_1.PodiumResource(settings);
     }
 }
 exports.Podium = Podium;

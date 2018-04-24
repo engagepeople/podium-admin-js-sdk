@@ -93,7 +93,10 @@ export const enum API_CODE {
     SYSTEM_ACCOUNT_NOT_FOUND = 'SYSTEM_ACCOUNT_NOT_FOUND',
 }
 
-export const enum PAGE_DIRECTION {
+export const enum SORT_DIRECTION {
     ASC = 'asc',
     DESC = 'desc',
+}
+export const enum SORT_FIELD {
+    CREATED_AT = 'created_at',
 }

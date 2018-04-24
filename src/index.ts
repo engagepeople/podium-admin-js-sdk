@@ -5,6 +5,7 @@ import {Users} from './Api/AdminUsers'
 import {Flex} from './Api/Campaigns/Flex'
 import {Incentive} from './Api/Campaigns/Incentive'
 import {Rewards} from './Api/Rewards'
+import {PodiumResource} from './Podium/PodiumResource'
 
 export class Podium {
     private Auth: Auth
@@ -19,7 +20,7 @@ export class Podium {
             Incentive: new Incentive(settings),
         }
         this.Users = new Users(settings)
-        this.Rewards = new Rewards(settings)
+        this.Rewards = new PodiumResource(settings)
     }
 }
 
