@@ -5,7 +5,7 @@ import {Filter} from './Filter'
 import {Token} from './Token'
 import {Paginator} from './Paginator'
 
-export class PodiumRequest extends Token {
+export class Request extends Token {
     protected Legacy: boolean = false
     protected Resource: string
     private settings: ISettings

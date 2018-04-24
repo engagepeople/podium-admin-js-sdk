@@ -1,12 +1,22 @@
 import {IPodiumPaginator, IPodiumPromise, ISettings} from '../../types'
-import {PodiumRequest} from './PodiumRequest'
+import {Request} from './Request'
 import {Filter} from './Filter'
 import {Paginator} from './Paginator'
 
-export class PodiumResource extends PodiumRequest {
+export class Resource extends Request {
 
     constructor(settings: ISettings) {
         super(settings)
+    }
+
+    public SetResource(resource: string): Resource {
+        super.Resource = resource
+        return this
+    }
+
+    public SetLegacy(legacy: boolean): Resource {
+        super.Legacy = legacy
+        return this
     }
 
     public Get<T>(id: number|string): IPodiumPromise<T> {

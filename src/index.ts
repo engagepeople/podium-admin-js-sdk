@@ -1,26 +1,23 @@
 // tslint:disable:max-classes-per-file
 import {ISettings} from '../types'
-import {Auth} from './Api/AdminAuth'
-import {Users} from './Api/AdminUsers'
-import {Flex} from './Api/Campaigns/Flex'
-import {Incentive} from './Api/Campaigns/Incentive'
-import {Rewards} from './Api/Rewards'
-import {PodiumResource} from './Podium/PodiumResource'
+import {Auth} from './Api/Auth'
+import {Request} from './Podium/Request'
+import {Resource} from './Podium/Resource'
 
 export class Podium {
     private Auth: Auth
-    private Users: Users
-    private Rewards: Rewards
-    private Campaigns: { Flex: Flex, Incentive: Incentive }
+    private Users: Request
+    private Rewards: Request
+    private Campaigns: { Flex: Request, Incentive: Request }
 
     constructor(settings: ISettings) {
         this.Auth = new Auth(settings)
         this.Campaigns = {
-            Flex: new Flex(settings),
-            Incentive: new Incentive(settings),
+            Flex: new Resource(settings).SetResource('admin/adhoc_campaign'),
+            Incentive: new Resource(settings).SetResource('admin/incentive'),
         }
-        this.Users = new Users(settings)
-        this.Rewards = new PodiumResource(settings)
+        this.Users = new Resource(settings).SetResource('user').SetLegacy(true)
+        this.Rewards = new Resource(settings).SetResource('admin/reward').SetLegacy(true)
     }
 }
 
