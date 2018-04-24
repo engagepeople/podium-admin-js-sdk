@@ -1976,10 +1976,269 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ "./src/Podium/PodiumRequest.ts":
-/*!*************************************!*\
-  !*** ./src/Podium/PodiumRequest.ts ***!
-  \*************************************/
+/***/ "./src/Api/Auth.ts":
+/*!*************************!*\
+  !*** ./src/Api/Auth.ts ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const Resource_1 = __webpack_require__(/*! ../Podium/Resource */ "./src/Podium/Resource.ts");
+class Auth extends Resource_1.Resource {
+    constructor(settings) {
+        super(settings);
+    }
+    Login(username, password) {
+        super.SetResource('authenticate');
+        return super.PostRequest({
+            password,
+            type: 'system',
+            user_account: username,
+        }).then((response) => {
+            if (response.apiCode === "SYSTEM_ACCOUNT_FOUND" /* SYSTEM_ACCOUNT_FOUND */) {
+                this.SetToken(response.token);
+                return response.detail;
+            }
+        });
+    }
+    GetToken() {
+        return super.GetToken();
+    }
+    SetToken(token) {
+        return super.SetToken(token);
+    }
+    HasToken() {
+        return super.HasToken();
+    }
+    Logout() {
+        super.SetResource('logout');
+        return super.PostRequest().then((rsp) => {
+            super.RemoveToken();
+            return rsp;
+        });
+    }
+}
+exports.Auth = Auth;
+
+
+/***/ }),
+
+/***/ "./src/Podium/ConvertTime.ts":
+/*!***********************************!*\
+  !*** ./src/Podium/ConvertTime.ts ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var DIRECTION;
+(function (DIRECTION) {
+    DIRECTION[DIRECTION["TO_UTC"] = 0] = "TO_UTC";
+    DIRECTION[DIRECTION["TO_API"] = 1] = "TO_API";
+})(DIRECTION || (DIRECTION = {}));
+class ConvertTime {
+    constructor(data) {
+        // tslint:disable-next-line:max-line-length
+        this.APIDateRegEx = new RegExp('^\\d{4}-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\\d|3[0-1]) ([0-1]?\\d|2[0-3]):([0-5]\\d):([0-5]\\d)$');
+        // tslint:disable-next-line:no-any
+        this.loopNestedObj = (obj, method) => {
+            Object.keys(obj).forEach((key) => {
+                if (obj[key] && typeof obj[key] === 'object' && !(obj[key] instanceof Date)) {
+                    this.loopNestedObj(obj[key], method);
+                }
+                else {
+                    if ((method === DIRECTION.TO_UTC) && (typeof obj[key] === 'string')) {
+                        if (this.isAPIDate(obj[key])) {
+                            obj[key] = this.StringToUTC(obj[key]);
+                        }
+                    }
+                    if ((method === DIRECTION.TO_API) && (obj[key] instanceof Date)) {
+                        obj[key] = this.DateToAPI(obj[key]);
+                    }
+                }
+            });
+            return obj;
+        };
+        this.isAPIDate = (key) => {
+            return this.APIDateRegEx.test(key);
+        };
+        this.StringToUTC = (key) => {
+            return new Date(key.replace(' ', 'T') + 'Z');
+        };
+        this.DateToAPI = (key) => {
+            return `${key.getUTCFullYear()}-
+        ${this.strPad(key.getUTCMonth() + 1)}-
+        ${this.strPad(key.getUTCDate())}
+        ${this.strPad(key.getUTCHours())}:
+        ${this.strPad(key.getUTCMinutes())}:
+        ${this.strPad(key.getUTCSeconds())}`;
+        };
+        this.strPad = (n) => {
+            return String('00' + n).slice(-2);
+        };
+        if (typeof data !== 'object') {
+            throw new Error('Convert Time must accept an object');
+        }
+        this.data = data;
+    }
+    ToUTC() {
+        return this.loopNestedObj(this.data, DIRECTION.TO_UTC);
+    }
+    ToAPI() {
+        return this.loopNestedObj(this.data, DIRECTION.TO_API);
+    }
+}
+exports.ConvertTime = ConvertTime;
+
+
+/***/ }),
+
+/***/ "./src/Podium/Filter.ts":
+/*!******************************!*\
+  !*** ./src/Podium/Filter.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const ListQuery_1 = __webpack_require__(/*! ./ListQuery */ "./src/Podium/ListQuery.ts");
+class Filter extends ListQuery_1.ListQuery {
+    constructor(values) {
+        super();
+        this.values = values;
+    }
+    setValues(values) {
+        this.values = values;
+        return this;
+    }
+    getValues() {
+        return this.values;
+    }
+    toParams() {
+        if (super.isLegacyMode()) {
+            return {
+                filter: this.values,
+            };
+        }
+        else {
+            return this.values;
+        }
+    }
+}
+exports.Filter = Filter;
+
+
+/***/ }),
+
+/***/ "./src/Podium/ListQuery.ts":
+/*!*********************************!*\
+  !*** ./src/Podium/ListQuery.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class ListQuery {
+    constructor() {
+        this.legacy = false;
+    }
+    setLegacyMode(mode) {
+        this.legacy = mode;
+    }
+    isLegacyMode() {
+        return this.legacy;
+    }
+}
+exports.ListQuery = ListQuery;
+
+
+/***/ }),
+
+/***/ "./src/Podium/Paginator.ts":
+/*!*********************************!*\
+  !*** ./src/Podium/Paginator.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const ListQuery_1 = __webpack_require__(/*! ./ListQuery */ "./src/Podium/ListQuery.ts");
+class Paginator extends ListQuery_1.ListQuery {
+    constructor() {
+        super(...arguments);
+        this.page = 1;
+        this.perPage = 50;
+        this.sortField = "created_at" /* CREATED_AT */;
+        this.sortDirection = "desc" /* DESC */;
+    }
+    setPage(page) {
+        this.page = page;
+        return this;
+    }
+    setPerPage(perPage) {
+        this.perPage = perPage;
+        return this;
+    }
+    setSort(field, direction) {
+        this.sortField = field;
+        this.sortDirection = direction;
+        return this;
+    }
+    setSortField(field) {
+        this.sortField = field;
+        return this;
+    }
+    setSortDirection(direction) {
+        this.sortDirection = direction;
+        return this;
+    }
+    setSortDesc(direction) {
+        if (direction) {
+            this.sortDirection = "desc" /* DESC */;
+        }
+        else {
+            this.sortDirection = "asc" /* ASC */;
+        }
+        return this;
+    }
+    toParams() {
+        const payload = {
+            count: this.perPage,
+            page: this.page,
+        };
+        if (super.isLegacyMode()) {
+            return Object.assign(payload, {
+                sorting: { [this.sortField]: this.sortDirection },
+            });
+        }
+        else {
+            return Object.assign(payload, {
+                sort_direction: this.sortDirection,
+                sort_field: this.sortField,
+            });
+        }
+    }
+}
+exports.Paginator = Paginator;
+
+
+/***/ }),
+
+/***/ "./src/Podium/Request.ts":
+/*!*******************************!*\
+  !*** ./src/Podium/Request.ts ***!
+  \*******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1987,51 +2246,76 @@ process.umask = function() { return 0; };
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+const ConvertTime_1 = __webpack_require__(/*! ./ConvertTime */ "./src/Podium/ConvertTime.ts");
+const Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Podium/Filter.ts");
 const Token_1 = __webpack_require__(/*! ./Token */ "./src/Podium/Token.ts");
-class PodiumRequest extends Token_1.Token {
+const Paginator_1 = __webpack_require__(/*! ./Paginator */ "./src/Podium/Paginator.ts");
+class Request extends Token_1.Token {
     constructor(settings) {
         super();
+        this.Legacy = false;
         this.settings = settings;
     }
-    GetRequest(resource, params) {
+    GetRequest(id) {
+        const request = {
+            method: 'get',
+        };
+        return this.Request(request, `${this.makeURL()}/${id}`);
+    }
+    DeleteRequest(id) {
+        const request = {
+            method: 'delete',
+        };
+        return this.Request(request, this.makeURL(id));
+    }
+    ListRequest(filter, paginator) {
+        let params = {};
+        if (filter instanceof Filter_1.Filter) {
+            filter.setLegacyMode(this.Legacy);
+            params = Object.assign(params, filter.toParams());
+        }
+        if (paginator instanceof Paginator_1.Paginator) {
+            paginator.setLegacyMode(this.Legacy);
+            params = Object.assign(params, paginator.toParams());
+        }
         const request = {
             method: 'get',
             params,
         };
-        return this.Request(resource, request);
+        return this.Request(request, this.makeURL());
     }
-    PostRequest(resource, data) {
+    PostRequest(data = {}) {
         const request = {
             data,
             method: 'post',
         };
-        return this.Request(resource, request);
+        return this.Request(request, this.makeURL());
     }
-    AuthenticateRequest(username, password) {
-        return this.PostRequest('authenticate', {
-            password,
-            type: 'system',
-            user_account: username,
-        }).then((response) => {
-            this.SetToken(response.token);
-            return response;
-        });
+    UpdateRequest(id, data) {
+        const request = {
+            data,
+            method: 'put',
+        };
+        return this.Request(request, this.makeURL(id));
     }
-    Request(resource, config) {
-        if ((resource !== 'authenticate') && !this.HasToken()) { // Don't even make the request
+    Request(config, url) {
+        if (!url) {
+            url = this.makeURL();
+        }
+        if ((this.Resource !== 'authenticate') && !this.HasToken()) { // Don't even make the request
             return new Promise((resolve, reject) => {
                 reject("INVALID_TOKEN" /* INVALID_TOKEN */);
             });
         }
-        // transformResponse (data) {
-        //     return convertTime.APIToUTC(JSON.parse(data))
-        // },
-        // transformRequest: [function (data, headers) {
-        //   return convertTime.UTCtoAPI(data)
-        // }],
-        config = Object.assign({ headers: this.makeHeaders() }, config);
+        config = Object.assign({
+            headers: this.makeHeaders(),
+            transformResponse: [(data) => {
+                    const convertTime = new ConvertTime_1.ConvertTime(JSON.parse(data));
+                    return convertTime.ToUTC();
+                }],
+        }, config);
         return new Promise((resolve, reject) => {
-            return axios_1.default(this.makeUrl(resource), config)
+            return axios_1.default(url, config)
                 .then((response) => {
                 resolve(response.data);
             })
@@ -2041,8 +2325,12 @@ class PodiumRequest extends Token_1.Token {
             });
         });
     }
-    makeUrl(path) {
-        return this.settings.endpoint + path;
+    makeURL(id) {
+        let build = this.settings.endpoint + this.Resource;
+        if (id) {
+            build += `/${id}`;
+        }
+        return build;
     }
     makeHeaders() {
         if (this.GetToken()) {
@@ -2063,35 +2351,64 @@ class PodiumRequest extends Token_1.Token {
         throw podiumError;
     }
 }
-exports.PodiumRequest = PodiumRequest;
+exports.Request = Request;
 
 
 /***/ }),
 
-/***/ "./src/Podium/PodiumResource.ts":
-/*!**************************************!*\
-  !*** ./src/Podium/PodiumResource.ts ***!
-  \**************************************/
+/***/ "./src/Podium/Resource.ts":
+/*!********************************!*\
+  !*** ./src/Podium/Resource.ts ***!
+  \********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const PodiumRequest_1 = __webpack_require__(/*! ./PodiumRequest */ "./src/Podium/PodiumRequest.ts");
-class PodiumResource extends PodiumRequest_1.PodiumRequest {
-    constructor(resource, settings) {
+const Request_1 = __webpack_require__(/*! ./Request */ "./src/Podium/Request.ts");
+const Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Podium/Filter.ts");
+const Paginator_1 = __webpack_require__(/*! ./Paginator */ "./src/Podium/Paginator.ts");
+class Resource extends Request_1.Request {
+    constructor(settings) {
         super(settings);
-        this.resource = resource;
+    }
+    SetResource(resource) {
+        super.Resource = resource;
+        return this;
+    }
+    SetLegacy(legacy) {
+        super.Legacy = legacy;
+        return this;
+    }
+    Get(id) {
+        return super.GetRequest(id);
+    }
+    List(arg1, paginator) {
+        let filter;
+        if (arg1 instanceof Paginator_1.Paginator) {
+            if (paginator) {
+                throw new TypeError('Order of parameters passed into List method must be Filter then Paginator');
+            }
+            paginator = arg1;
+            filter = null;
+        }
+        else if (arg1 instanceof Filter_1.Filter) {
+            filter = arg1;
+        }
+        return super.ListRequest(filter, paginator);
     }
     Create(params) {
-        return super.PostRequest(this.resource, params);
+        return super.PostRequest(params);
     }
-    List(params) {
-        return super.GetRequest(this.resource, params);
+    Update(id, params) {
+        return super.UpdateRequest(id, params);
+    }
+    Delete(id) {
+        return super.DeleteRequest(id);
     }
 }
-exports.PodiumResource = PodiumResource;
+exports.Resource = Resource;
 
 
 /***/ }),
@@ -2146,87 +2463,6 @@ exports.Token = Token;
 
 /***/ }),
 
-/***/ "./src/api/Auth.ts":
-/*!*************************!*\
-  !*** ./src/api/Auth.ts ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
-class Auth extends PodiumResource_1.PodiumResource {
-    constructor(settings) {
-        super('logout', settings);
-    }
-    Login(username, password) {
-        return super.AuthenticateRequest(username, password);
-    }
-    GetToken() {
-        return super.GetToken();
-    }
-    SetToken(token) {
-        return super.SetToken(token);
-    }
-    HasToken() {
-        return super.HasToken();
-    }
-    Logout() {
-        return super.PostRequest(this.resource).then((rsp) => {
-            super.RemoveToken();
-            return rsp;
-        });
-    }
-}
-exports.Auth = Auth;
-
-
-/***/ }),
-
-/***/ "./src/api/Flex.ts":
-/*!*************************!*\
-  !*** ./src/api/Flex.ts ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
-class Flex extends PodiumResource_1.PodiumResource {
-    constructor(settings) {
-        super('admin/adhoc_campaign', settings);
-    }
-}
-exports.Flex = Flex;
-
-
-/***/ }),
-
-/***/ "./src/api/Users.ts":
-/*!**************************!*\
-  !*** ./src/api/Users.ts ***!
-  \**************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const PodiumResource_1 = __webpack_require__(/*! ../Podium/PodiumResource */ "./src/Podium/PodiumResource.ts");
-class Users extends PodiumResource_1.PodiumResource {
-    constructor(settings) {
-        super('user', settings);
-    }
-}
-exports.Users = Users;
-
-
-/***/ }),
-
 /***/ "./src/index.ts":
 /*!**********************!*\
   !*** ./src/index.ts ***!
@@ -2237,19 +2473,24 @@ exports.Users = Users;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Auth_1 = __webpack_require__(/*! ./api/Auth */ "./src/api/Auth.ts");
-const Flex_1 = __webpack_require__(/*! ./api/Flex */ "./src/api/Flex.ts");
-const Users_1 = __webpack_require__(/*! ./api/Users */ "./src/api/Users.ts");
+const Auth_1 = __webpack_require__(/*! ./Api/Auth */ "./src/Api/Auth.ts");
+const Resource_1 = __webpack_require__(/*! ./Podium/Resource */ "./src/Podium/Resource.ts");
 class Podium {
     constructor(settings) {
         this.Auth = new Auth_1.Auth(settings);
-        this.Users = new Users_1.Users(settings);
         this.Campaigns = {
-            Flex: new Flex_1.Flex(settings),
+            Flex: new Resource_1.Resource(settings).SetResource('admin/adhoc_campaign'),
+            Incentive: new Resource_1.Resource(settings).SetResource('admin/incentive'),
         };
+        this.Users = new Resource_1.Resource(settings).SetResource('user').SetLegacy(true);
+        this.Rewards = new Resource_1.Resource(settings).SetResource('admin/reward').SetLegacy(true);
     }
 }
 exports.Podium = Podium;
+var Paginator_1 = __webpack_require__(/*! ./Podium/Paginator */ "./src/Podium/Paginator.ts");
+exports.PodiumPaginator = Paginator_1.Paginator;
+var Filter_1 = __webpack_require__(/*! ./Podium/Filter */ "./src/Podium/Filter.ts");
+exports.PodiumFilter = Filter_1.Filter;
 
 
 /***/ })
