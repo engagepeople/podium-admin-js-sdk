@@ -1,24 +1,20 @@
-import {API_CODE, PAGE_DIRECTION} from '../../types'
+import {PAGE_DIRECTION} from '../../types'
+import {ListQuery} from './ListQuery'
 
-export class Paginator {
-    private legacy: boolean = false
+export class Paginator extends ListQuery {
     private page: number = 1
     private perPage: number = 50
     private sortField: string = 'created_at'
     private sortDirection: PAGE_DIRECTION = PAGE_DIRECTION.DESC
-
-    public setLegacyMode(mode: boolean): void {
-        this.legacy = mode
-    }
 
     public setPage(page: number): Paginator {
         this.page = page
         return this
     }
 
-    public setPerPage(perPage: number): API_CODE {
+    public setPerPage(perPage: number): Paginator {
         this.perPage = perPage
-        return API_CODE.SYSTEM_ACCOUNT_FOUND
+        return this
     }
 
     public setSortField(sortField: string): Paginator {
@@ -31,7 +27,7 @@ export class Paginator {
         return this
     }
 
-    public setSortDesc(direction: PAGE_DIRECTION): Paginator {
+    public setSortDesc(direction: boolean): Paginator {
         if (direction) {
             this.sortDirection = PAGE_DIRECTION.DESC
         } else {
@@ -41,19 +37,19 @@ export class Paginator {
     }
 
     public toParams(): object {
-        if (this.legacy) {
-            return {
-                count: this.perPage,
-                page: this.page,
+        const payload =  {
+            count: this.perPage,
+            page: this.page,
+        }
+        if (super.isLegacyMode()) {
+            return Object.assign(payload, {
                 sorting: {[this.sortField]: this.sortDirection},
-            }
+            })
         } else {
-            return {
-                count: this.perPage,
-                page: this.page,
+            return Object.assign(payload, {
                 sort_direction: this.sortDirection,
                 sort_field: this.sortField,
-            }
+            })
         }
     }
 }

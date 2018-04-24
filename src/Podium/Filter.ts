@@ -1,22 +1,17 @@
-export class Filter<F> {
-    private legacy: boolean = false
+import {ListQuery} from './ListQuery'
+
+export class Filter<F> extends ListQuery {
+
     private values: F
 
     constructor(values?: F) {
+        super()
         this.values = values
     }
 
-    public isLegacyMode(): boolean {
-        return this.legacy
-    }
-
-    public setLegacyMode(mode: boolean): void {
-        this.legacy = mode
-    }
-
-    public setValues(values: F): F {
+    public setValues(values: F): Filter<F> {
         this.values = values
-        return this.values
+        return this
     }
 
     public getValues(): F {
@@ -24,7 +19,7 @@ export class Filter<F> {
     }
 
     public toParams(): object | F {
-        if (this.legacy) {
+        if (super.isLegacyMode()) {
             return {
                 filter: this.values,
             }

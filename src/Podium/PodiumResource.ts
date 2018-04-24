@@ -13,8 +13,18 @@ export class PodiumResource extends PodiumRequest {
         return super.GetRequest(id)
     }
 
-    public List<T, F>(params?: Filter<F>, paginator?: | Paginator): IPodiumPromise<IPodiumPaginator<T>> {
-        return super.ListRequest(params, paginator)
+    public List<F, T>(arg1?: Filter<F> | Paginator, paginator?: | Paginator): IPodiumPromise<IPodiumPaginator<T>> {
+        let filter: Filter<F>
+        if (arg1 instanceof Paginator) {
+            if (paginator) {
+                throw new TypeError('Order of parameters passed into List method must be Filter then Paginator')
+            }
+            paginator = arg1
+            filter = null
+        } else if (arg1 instanceof Filter) {
+            filter = arg1
+        }
+        return super.ListRequest(filter, paginator)
     }
 
     public Create<T>(params?: object): IPodiumPromise<T> {

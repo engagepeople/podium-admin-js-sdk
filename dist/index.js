@@ -2200,26 +2200,21 @@ exports.ConvertTime = ConvertTime;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-class Filter {
+const ListQuery_1 = __webpack_require__(/*! ./ListQuery */ "./src/Podium/ListQuery.ts");
+class Filter extends ListQuery_1.ListQuery {
     constructor(values) {
-        this.legacy = false;
+        super();
         this.values = values;
-    }
-    isLegacyMode() {
-        return this.legacy;
-    }
-    setLegacyMode(mode) {
-        this.legacy = mode;
     }
     setValues(values) {
         this.values = values;
-        return this.values;
+        return this;
     }
     getValues() {
         return this.values;
     }
     toParams() {
-        if (this.legacy) {
+        if (super.isLegacyMode()) {
             return {
                 filter: this.values,
             };
@@ -2234,6 +2229,32 @@ exports.Filter = Filter;
 
 /***/ }),
 
+/***/ "./src/Podium/ListQuery.ts":
+/*!*********************************!*\
+  !*** ./src/Podium/ListQuery.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class ListQuery {
+    constructor() {
+        this.legacy = false;
+    }
+    setLegacyMode(mode) {
+        this.legacy = mode;
+    }
+    isLegacyMode() {
+        return this.legacy;
+    }
+}
+exports.ListQuery = ListQuery;
+
+
+/***/ }),
+
 /***/ "./src/Podium/Paginator.ts":
 /*!*********************************!*\
   !*** ./src/Podium/Paginator.ts ***!
@@ -2244,16 +2265,14 @@ exports.Filter = Filter;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-class Paginator {
+const ListQuery_1 = __webpack_require__(/*! ./ListQuery */ "./src/Podium/ListQuery.ts");
+class Paginator extends ListQuery_1.ListQuery {
     constructor() {
-        this.legacy = false;
+        super(...arguments);
         this.page = 1;
         this.perPage = 50;
         this.sortField = 'created_at';
         this.sortDirection = "desc" /* DESC */;
-    }
-    setLegacyMode(mode) {
-        this.legacy = mode;
     }
     setPage(page) {
         this.page = page;
@@ -2261,7 +2280,7 @@ class Paginator {
     }
     setPerPage(perPage) {
         this.perPage = perPage;
-        return "SYSTEM_ACCOUNT_FOUND" /* SYSTEM_ACCOUNT_FOUND */;
+        return this;
     }
     setSortField(sortField) {
         this.sortField = sortField;
@@ -2281,20 +2300,20 @@ class Paginator {
         return this;
     }
     toParams() {
-        if (this.legacy) {
-            return {
-                count: this.perPage,
-                page: this.page,
+        const payload = {
+            count: this.perPage,
+            page: this.page,
+        };
+        if (super.isLegacyMode()) {
+            return Object.assign(payload, {
                 sorting: { [this.sortField]: this.sortDirection },
-            };
+            });
         }
         else {
-            return {
-                count: this.perPage,
-                page: this.page,
+            return Object.assign(payload, {
                 sort_direction: this.sortDirection,
                 sort_field: this.sortField,
-            };
+            });
         }
     }
 }
@@ -2338,13 +2357,13 @@ class PodiumRequest extends Token_1.Token {
     }
     ListRequest(filter, paginator) {
         let params = {};
-        if (paginator instanceof Paginator_1.Paginator) {
-            paginator.setLegacyMode(this.Legacy);
-            params = Object.assign(params, paginator.toParams());
-        }
         if (filter instanceof Filter_1.Filter) {
             filter.setLegacyMode(this.Legacy);
             params = Object.assign(params, filter.toParams());
+        }
+        if (paginator instanceof Paginator_1.Paginator) {
+            paginator.setLegacyMode(this.Legacy);
+            params = Object.assign(params, paginator.toParams());
         }
         const request = {
             method: 'get',
@@ -2435,6 +2454,8 @@ exports.PodiumRequest = PodiumRequest;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const PodiumRequest_1 = __webpack_require__(/*! ./PodiumRequest */ "./src/Podium/PodiumRequest.ts");
+const Filter_1 = __webpack_require__(/*! ./Filter */ "./src/Podium/Filter.ts");
+const Paginator_1 = __webpack_require__(/*! ./Paginator */ "./src/Podium/Paginator.ts");
 class PodiumResource extends PodiumRequest_1.PodiumRequest {
     constructor(settings) {
         super(settings);
@@ -2442,8 +2463,19 @@ class PodiumResource extends PodiumRequest_1.PodiumRequest {
     Get(id) {
         return super.GetRequest(id);
     }
-    List(params, paginator) {
-        return super.ListRequest(params, paginator);
+    List(arg1, paginator) {
+        let filter;
+        if (arg1 instanceof Paginator_1.Paginator) {
+            if (paginator) {
+                throw new TypeError('Order of parameters passed into List method must be Filter then Paginator');
+            }
+            paginator = arg1;
+            filter = null;
+        }
+        else if (arg1 instanceof Filter_1.Filter) {
+            filter = arg1;
+        }
+        return super.ListRequest(filter, paginator);
     }
     Create(params) {
         return super.PostRequest(params);
