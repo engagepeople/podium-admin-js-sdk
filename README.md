@@ -93,10 +93,20 @@ Log in with a username and password and receive an API token to interact with ot
 ### Methods that extend Resource
 
 ```
-Podium.User
-Podium.Rewards
-Podium.Campaigns.Flex
+Podium.Auth
+Podium.Campaigns.Flex.Flex
+Podium.Campaigns.Flex.Issue.File
+Podium.Campaigns.Flex.Issue.FileError
+Podium.Campaigns.Flex.Issue.Manual
+Podium.Campaigns.Flex.Rule
 Podium.Campaigns.Incentive
+Podium.LRG.Configuration
+Podium.LRG.Session
+Podium.Rewards
+Podium.Segments
+Podium.Terms.Latest
+Podium.Terms.Terms
+Podium.Users
 ```
 
 ### Paginator properties

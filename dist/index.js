@@ -2479,11 +2479,27 @@ class Podium {
     constructor(settings) {
         this.Auth = new Auth_1.Auth(settings);
         this.Campaigns = {
-            Flex: new Resource_1.Resource(settings).SetResource('admin/adhoc_campaign'),
-            Incentive: new Resource_1.Resource(settings).SetResource('admin/incentive'),
+            Flex: {
+                Flex: new Resource_1.Resource(settings).SetResource('admin/adhoc_campaign'),
+                Issue: {
+                    File: new Resource_1.Resource(settings).SetResource('admin/adhoc_file'),
+                    FileError: new Resource_1.Resource(settings).SetResource('admin/adhoc_file_errors'),
+                    Manual: new Resource_1.Resource(settings).SetResource('admin/adhoc_manual'),
+                },
+                Rule: new Resource_1.Resource(settings).SetResource('admin/adhoc_campaign_rule'),
+            },
+            Incentive: new Resource_1.Resource(settings).SetResource('admin/incentive_campaign'),
+        };
+        this.LRG = {
+            Configuration: new Resource_1.Resource(settings).SetResource('lrg/configurations'),
+        };
+        this.Rewards = new Resource_1.Resource(settings).SetResource('admin/reward').SetLegacy(true);
+        this.Segments = new Resource_1.Resource(settings).SetResource('group').SetLegacy(true);
+        this.Terms = {
+            Latest: new Resource_1.Resource(settings).SetResource('admin/terms_latest'),
+            Terms: new Resource_1.Resource(settings).SetResource('admin/terms'),
         };
         this.Users = new Resource_1.Resource(settings).SetResource('user').SetLegacy(true);
-        this.Rewards = new Resource_1.Resource(settings).SetResource('admin/reward').SetLegacy(true);
     }
 }
 exports.Podium = Podium;
