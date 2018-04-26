@@ -2490,9 +2490,10 @@ class Podium {
             },
             Incentive: new Resource_1.Resource(settings).SetResource('admin/incentive_campaign'),
         };
-        this.LRG = {
-            Configuration: new Resource_1.Resource(settings).SetResource('lrg/configurations'),
-        };
+        this.Currency = new Resource_1.Resource(settings).SetResource('admin/currency'),
+            this.LRG = {
+                Configuration: new Resource_1.Resource(settings).SetResource('lrg/configurations'),
+            };
         this.Rewards = new Resource_1.Resource(settings).SetResource('admin/reward').SetLegacy(true);
         this.Segments = new Resource_1.Resource(settings).SetResource('group').SetLegacy(true);
         this.Terms = {

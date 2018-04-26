@@ -18,6 +18,7 @@ export class Podium {
         },
         Incentive: Request,
     }
+    public Currency: Request
     public Rewards: Request
     public Segments: Request
     public LRG: {
@@ -43,6 +44,7 @@ export class Podium {
             },
             Incentive: new Resource(settings).SetResource('admin/incentive_campaign'),
         }
+        this.Currency =  new Resource(settings).SetResource('admin/currency'),
         this.LRG = {
             Configuration: new Resource(settings).SetResource('lrg/configurations'),
         }

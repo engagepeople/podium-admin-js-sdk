@@ -1,4 +1,4 @@
-import {IPodiumPaginator, IPodiumPromise, ISettings} from '../../types'
+import {IPodiumList, IPodiumPromise, ISettings} from '../../types'
 import {Request} from './Request'
 import {Filter} from './Filter'
 import {Paginator} from './Paginator'
@@ -23,7 +23,7 @@ export class Resource extends Request {
         return super.GetRequest(id)
     }
 
-    public List<F, T>(arg1?: Filter<F> | Paginator, paginator?: | Paginator): IPodiumPromise<IPodiumPaginator<T>> {
+    public List<F, T>(arg1?: Filter<F> | Paginator, paginator?: | Paginator): IPodiumPromise<IPodiumList<T>> {
         let filter: Filter<F>
         if (arg1 instanceof Paginator) {
             if (paginator) {

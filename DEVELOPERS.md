@@ -3,8 +3,8 @@
 ## Settings up Environment
 
 To used the source code
-- Run `npm dev` from the podium-admin-sdk folder to start TS watch 
-- Run `npm link` from the podium-admin-sdk `package.json` folder  
+- Run `npm dev` from the `podium-admin-sdk` folder to start TS watch 
+- Run `npm link` from the `podium-admin-sdk` `package.json` folder  
 - Run `npm link podium-admin-sdk` from the package you are developing in
 
 - Restart of your dev server maybe required

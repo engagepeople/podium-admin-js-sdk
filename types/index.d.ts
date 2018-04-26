@@ -36,7 +36,7 @@ export interface ILogoutResponse {
     message: string
 }
 
-export interface IPodiumPaginator<T> {
+export interface IPodiumList<T> {
     readonly current_page: number
     readonly data: T[]
     readonly last_page: number
@@ -56,6 +56,17 @@ export interface IUser extends IPodiumModel {
     last_name: string
     user_account: string
     email: string
+}
+
+export interface ICurrency extends IPodiumModel {
+    code: string
+    country_alpha_2_code: string
+    increment: string
+    is_virtual: boolean
+    name: string
+    numeric_code: string
+    precision: number
+    symbol: string
 }
 
 export interface IFlex extends IPodiumModel {
