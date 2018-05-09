@@ -11,7 +11,7 @@ npm install podium-admin-sdk
 ```
 import { Podium, PodiumPaginator, PodiumFilter } from 'podium-admin-sdk'
 let podium = new Podium({
-  endpoint: 'https://admin.podiumrewards.com/api/'
+  endpoint: 'https://api.podiumrewards.com/v1/'
 })
 
 podium.Auth.login(email, password).then(rsp => {

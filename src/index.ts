@@ -44,7 +44,7 @@ export class Podium {
             },
             Incentive: new Resource(settings).SetResource('admin/incentive_campaign'),
         }
-        this.Currency =  new Resource(settings).SetResource('admin/currency'),
+        this.Currency =  new Resource(settings).SetResource('admin/currency')
         this.LRG = {
             Configuration: new Resource(settings).SetResource('lrg/configurations'),
         }

@@ -15,11 +15,15 @@ export class Request extends Token {
         this.settings = settings
     }
 
-    protected GetRequest<T>(id: number | string): IPodiumPromise<T> {
+    protected GetRequest<T>(id?: number | string): IPodiumPromise<T> {
         const request: AxiosRequestConfig = {
             method: 'get',
         }
-        return this.Request(request, `${this.makeURL()}/${id}`)
+        let url = `${this.makeURL()}`
+        if (id) {
+            url = `${url}/${id}`
+        }
+        return this.Request(request, url)
     }
 
     protected DeleteRequest<T>(id: number | string): IPodiumPromise<T> {
@@ -87,7 +91,7 @@ export class Request extends Token {
                     resolve(response.data)
                 })
                 .catch((error) => {
-                    this.catchError(error)
+                    this.parseError(error)
                     reject(error)
                 })
         })
@@ -109,7 +113,7 @@ export class Request extends Token {
         }
     }
 
-    private catchError(error: AxiosError): IPodiumErrorResponse {
+    private parseError(error: AxiosError): IPodiumErrorResponse {
         const podiumError: IPodiumErrorResponse = {
             data: error.response.data as IResponse,
             status: error.response.status,
@@ -119,7 +123,7 @@ export class Request extends Token {
         if ((podiumError.status === 400) && (podiumError.data.apiCode === API_CODE.INVALID_TOKEN)) {
             this.RemoveToken()
         }
-        throw podiumError
+        return podiumError
     }
 
 }
