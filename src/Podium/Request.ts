@@ -73,11 +73,16 @@ export class Request extends Token {
             })
         }
 
+        if (typeof config.data === 'object') {
+            const convertTimeToAPI = new ConvertTime(config.data)
+            config.data = convertTimeToAPI.ToAPI()
+        }
+
         config = Object.assign({
             headers: this.makeHeaders(),
             transformResponse: [(data: string) => {
-                const convertTime = new ConvertTime(JSON.parse(data))
-                return convertTime.ToUTC()
+                const convertTimeToUTC = new ConvertTime(JSON.parse(data))
+                return convertTimeToUTC.ToUTC()
             }],
         }, config)
 

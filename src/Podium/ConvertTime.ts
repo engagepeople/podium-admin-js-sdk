@@ -51,12 +51,8 @@ export class ConvertTime {
     }
 
     private DateToAPI = (key: Date): string => {
-        return `${key.getUTCFullYear()}-
-        ${this.strPad(key.getUTCMonth() + 1)}-
-        ${this.strPad(key.getUTCDate())}
-        ${this.strPad(key.getUTCHours())}:
-        ${this.strPad(key.getUTCMinutes())}:
-        ${this.strPad(key.getUTCSeconds())}`
+        // tslint:disable-next-line:max-line-length
+        return `${key.getUTCFullYear()}-${this.strPad(key.getUTCMonth() + 1)}-${this.strPad(key.getUTCDate())} ${this.strPad(key.getUTCHours())}:${this.strPad(key.getUTCMinutes())}:${this.strPad(key.getUTCSeconds())}`
     }
 
     private strPad = (n: number): string => {
