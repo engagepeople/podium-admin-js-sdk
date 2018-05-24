@@ -104,6 +104,7 @@ Podium.LRG.Configuration
 Podium.LRG.Session
 Podium.Rewards
 Podium.Segments
+Podium.SSO.Attributes
 Podium.Terms.Latest
 Podium.Terms.Terms
 Podium.Users

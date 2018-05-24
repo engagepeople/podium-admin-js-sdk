@@ -29,7 +29,7 @@
     "dist/*.js",
     "types/*.d.ts"
   ],
-  "types": "./types/index.d.ts",
+  "types": "./types/*.d.ts",
   "devDependencies": {
     "source-map-loader": "^0.2.3",
     "ts-loader": "^4.1.0",

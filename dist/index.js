@@ -2501,6 +2501,9 @@ class Podium {
             Terms: new Resource_1.Resource(settings).SetResource('admin/terms'),
         };
         this.Users = new Resource_1.Resource(settings).SetResource('user').SetLegacy(true);
+        this.SSO = {
+            Attributes: new Resource_1.Resource(settings).SetResource('samlattributes'),
+        };
     }
 }
 exports.Podium = Podium;

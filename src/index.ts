@@ -29,6 +29,9 @@ export class Podium {
         Terms: Request,
     }
     public Users: Request
+    public SSO: {
+        Attributes: Request,
+    }
 
     constructor(settings: ISettings) {
         this.Auth = new Auth(settings)
@@ -55,6 +58,9 @@ export class Podium {
             Terms: new Resource(settings).SetResource('admin/terms'),
         }
         this.Users = new Resource(settings).SetResource('user').SetLegacy(true)
+        this.SSO = {
+            Attributes: new Resource(settings).SetResource('samlattributes'),
+        }
     }
 }
 
