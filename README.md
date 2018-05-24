@@ -103,6 +103,7 @@ Podium.Campaigns.Incentive
 Podium.LRG.Configuration
 Podium.LRG.Session
 Podium.Rewards
+Podium.SSO.Attributes
 Podium.Segments
 Podium.Terms.Latest
 Podium.Terms.Terms
