@@ -102,6 +102,8 @@ Podium.Campaigns.Flex.Rule
 Podium.Campaigns.Incentive
 Podium.LRG.Configuration
 Podium.LRG.Session
+Podium.Product.Catalog
+Podium.Product.Filterable
 Podium.Rewards
 Podium.Segments
 Podium.SSO.Attributes
