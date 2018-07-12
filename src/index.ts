@@ -21,6 +21,7 @@ export class Podium {
     public Product: {
         Catalog: Request,
         Filterable: Request,
+        Product: Request,
     }
     public Currency: Request
     public Rewards: Request
@@ -54,6 +55,7 @@ export class Podium {
         this.Product = {
             Catalog: new Resource(settings).SetResource('admin/catalog'),
             Filterable: new Resource(settings).SetResource('admin/productFilterable'),
+            Product: new Resource(settings).SetResource('admin/product'),
         }
         this.Currency =  new Resource(settings).SetResource('admin/currency'),
         this.LRG = {
