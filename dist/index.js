@@ -2071,12 +2071,8 @@ class ConvertTime {
             return new Date(key.replace(' ', 'T') + 'Z');
         };
         this.DateToAPI = (key) => {
-            return `${key.getUTCFullYear()}-
-        ${this.strPad(key.getUTCMonth() + 1)}-
-        ${this.strPad(key.getUTCDate())}
-        ${this.strPad(key.getUTCHours())}:
-        ${this.strPad(key.getUTCMinutes())}:
-        ${this.strPad(key.getUTCSeconds())}`;
+            // tslint:disable-next-line:max-line-length
+            return `${key.getUTCFullYear()}-${this.strPad(key.getUTCMonth() + 1)}-${this.strPad(key.getUTCDate())} ${this.strPad(key.getUTCHours())}:${this.strPad(key.getUTCMinutes())}:${this.strPad(key.getUTCSeconds())}`;
         };
         this.strPad = (n) => {
             return String('00' + n).slice(-2);
@@ -2307,11 +2303,15 @@ class Request extends Token_1.Token {
                 reject("INVALID_TOKEN" /* INVALID_TOKEN */);
             });
         }
+        if (typeof config.data === 'object') {
+            const convertTimeToAPI = new ConvertTime_1.ConvertTime(config.data);
+            config.data = convertTimeToAPI.ToAPI();
+        }
         config = Object.assign({
             headers: this.makeHeaders(),
             transformResponse: [(data) => {
-                    const convertTime = new ConvertTime_1.ConvertTime(JSON.parse(data));
-                    return convertTime.ToUTC();
+                    const convertTimeToUTC = new ConvertTime_1.ConvertTime(JSON.parse(data));
+                    return convertTimeToUTC.ToUTC();
                 }],
         }, config);
         return new Promise((resolve, reject) => {
@@ -2489,6 +2489,11 @@ class Podium {
                 Rule: new Resource_1.Resource(settings).SetResource('admin/adhoc_campaign_rule'),
             },
             Incentive: new Resource_1.Resource(settings).SetResource('admin/incentive_campaign'),
+        };
+        this.Product = {
+            Catalog: new Resource_1.Resource(settings).SetResource('admin/catalog'),
+            Filterable: new Resource_1.Resource(settings).SetResource('admin/productFilterable'),
+            Product: new Resource_1.Resource(settings).SetResource('admin/product'),
         };
         this.Currency = new Resource_1.Resource(settings).SetResource('admin/currency'),
             this.LRG = {

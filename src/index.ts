@@ -18,6 +18,11 @@ export class Podium {
         },
         Incentive: Request,
     }
+    public Product: {
+        Catalog: Request,
+        Filterable: Request,
+        Product: Request,
+    }
     public Currency: Request
     public Rewards: Request
     public Segments: Request
@@ -46,6 +51,11 @@ export class Podium {
                 Rule: new Resource(settings).SetResource('admin/adhoc_campaign_rule'),
             },
             Incentive: new Resource(settings).SetResource('admin/incentive_campaign'),
+        }
+        this.Product = {
+            Catalog: new Resource(settings).SetResource('admin/catalog'),
+            Filterable: new Resource(settings).SetResource('admin/productFilterable'),
+            Product: new Resource(settings).SetResource('admin/product'),
         }
         this.Currency =  new Resource(settings).SetResource('admin/currency'),
         this.LRG = {
