@@ -26,6 +26,7 @@ export class Podium {
     public Currency: Request
     public Rewards: Request
     public Segments: Request
+    public Shop: Request
     public LRG: {
         Configuration: Request,
     }
@@ -37,7 +38,6 @@ export class Podium {
     public SSO: {
         Attributes: Request,
     }
-
     constructor(settings: ISettings) {
         this.Auth = new Auth(settings)
         this.Campaigns = {
@@ -58,6 +58,7 @@ export class Podium {
             Product: new Resource(settings).SetResource('admin/product'),
         }
         this.Currency =  new Resource(settings).SetResource('admin/currency'),
+        this.Shop =  new Resource(settings).SetResource('admin/shop'),
         this.LRG = {
             Configuration: new Resource(settings).SetResource('lrg/configurations'),
         }
