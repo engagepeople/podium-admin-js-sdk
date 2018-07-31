@@ -18,6 +18,7 @@ export class Podium {
         },
         Incentive: Request,
     }
+    public Frequency: Request
     public Language: Request
     public Product: {
         Catalog: Request,
@@ -53,7 +54,8 @@ export class Podium {
             },
             Incentive: new Resource(settings).SetResource('admin/incentive_campaign'),
         }
-        this.Language = new Resource(settings).SetResource('language')
+        this.Frequency = new Resource(settings).SetResource('admin/frequency')
+        this.Language = new Resource(settings).SetResource('admin/language')
         this.Product = {
             Catalog: new Resource(settings).SetResource('admin/catalog'),
             Filterable: new Resource(settings).SetResource('admin/productFilterable'),

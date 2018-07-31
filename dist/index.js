@@ -2490,7 +2490,8 @@ class Podium {
             },
             Incentive: new Resource_1.Resource(settings).SetResource('admin/incentive_campaign'),
         };
-        this.Language = new Resource_1.Resource(settings).SetResource('language');
+        this.Frequency = new Resource_1.Resource(settings).SetResource('admin/frequency');
+        this.Language = new Resource_1.Resource(settings).SetResource('admin/language');
         this.Product = {
             Catalog: new Resource_1.Resource(settings).SetResource('admin/catalog'),
             Filterable: new Resource_1.Resource(settings).SetResource('admin/productFilterable'),
