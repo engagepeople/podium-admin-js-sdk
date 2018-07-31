@@ -17,7 +17,7 @@ export class Podium {
             Rule: Request,
         },
         Incentive: Request,
-    },
+    }
     public Language: Request
     public Product: {
         Catalog: Request,
@@ -53,14 +53,14 @@ export class Podium {
             },
             Incentive: new Resource(settings).SetResource('admin/incentive_campaign'),
         }
-        this.Language = new Resource(settings).SetResource('language'),
+        this.Language = new Resource(settings).SetResource('language')
         this.Product = {
             Catalog: new Resource(settings).SetResource('admin/catalog'),
             Filterable: new Resource(settings).SetResource('admin/productFilterable'),
             Product: new Resource(settings).SetResource('admin/product'),
         }
-        this.Currency =  new Resource(settings).SetResource('admin/currency'),
-        this.Shop =  new Resource(settings).SetResource('admin/shop'),
+        this.Currency =  new Resource(settings).SetResource('admin/currency')
+        this.Shop =  new Resource(settings).SetResource('admin/shop')
         this.LRG = {
             Configuration: new Resource(settings).SetResource('lrg/configurations'),
         }

@@ -2490,16 +2490,17 @@ class Podium {
             },
             Incentive: new Resource_1.Resource(settings).SetResource('admin/incentive_campaign'),
         };
+        this.Language = new Resource_1.Resource(settings).SetResource('language');
         this.Product = {
             Catalog: new Resource_1.Resource(settings).SetResource('admin/catalog'),
             Filterable: new Resource_1.Resource(settings).SetResource('admin/productFilterable'),
             Product: new Resource_1.Resource(settings).SetResource('admin/product'),
         };
-        this.Currency = new Resource_1.Resource(settings).SetResource('admin/currency'),
-            this.Shop = new Resource_1.Resource(settings).SetResource('admin/shop'),
-            this.LRG = {
-                Configuration: new Resource_1.Resource(settings).SetResource('lrg/configurations'),
-            };
+        this.Currency = new Resource_1.Resource(settings).SetResource('admin/currency');
+        this.Shop = new Resource_1.Resource(settings).SetResource('admin/shop');
+        this.LRG = {
+            Configuration: new Resource_1.Resource(settings).SetResource('lrg/configurations'),
+        };
         this.Rewards = new Resource_1.Resource(settings).SetResource('admin/reward').SetLegacy(true);
         this.Segments = new Resource_1.Resource(settings).SetResource('group').SetLegacy(true);
         this.Terms = {
