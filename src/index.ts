@@ -17,7 +17,8 @@ export class Podium {
             Rule: Request,
         },
         Incentive: Request,
-    }
+    },
+    public Language: Request
     public Product: {
         Catalog: Request,
         Filterable: Request,
@@ -52,6 +53,7 @@ export class Podium {
             },
             Incentive: new Resource(settings).SetResource('admin/incentive_campaign'),
         }
+        this.Language = new Resource(settings).SetResource('language'),
         this.Product = {
             Catalog: new Resource(settings).SetResource('admin/catalog'),
             Filterable: new Resource(settings).SetResource('admin/productFilterable'),
