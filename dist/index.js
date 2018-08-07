@@ -2348,7 +2348,6 @@ class Request extends Token_1.Token {
         if ((podiumError.status === 400) && (podiumError.data.apiCode === "INVALID_TOKEN" /* INVALID_TOKEN */)) {
             this.RemoveToken();
         }
-        throw podiumError;
     }
 }
 exports.Request = Request;
