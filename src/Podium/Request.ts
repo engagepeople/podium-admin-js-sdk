@@ -92,8 +92,7 @@ export class Request extends Token {
                     resolve(response.data)
                 })
                 .catch((error) => {
-                    this.catchError(error)
-                    reject(error)
+                    reject(this.catchError(error))
                 })
         })
     }
@@ -114,7 +113,7 @@ export class Request extends Token {
         }
     }
 
-    private catchError(error: AxiosError): void {
+    private catchError(error: AxiosError): IPodiumErrorResponse {
         const podiumError: IPodiumErrorResponse = {
             data: error.response.data as IResponse,
             status: error.response.status,
@@ -124,6 +123,8 @@ export class Request extends Token {
         if ((podiumError.status === 400) && (podiumError.data.apiCode === API_CODE.INVALID_TOKEN)) {
             this.RemoveToken()
         }
+
+        return podiumError
     }
 
 }
