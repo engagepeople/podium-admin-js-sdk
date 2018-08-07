@@ -2320,8 +2320,7 @@ class Request extends Token_1.Token {
                 resolve(response.data);
             })
                 .catch((error) => {
-                this.catchError(error);
-                reject(error);
+                reject(this.catchError(error));
             });
         });
     }
@@ -2348,6 +2347,7 @@ class Request extends Token_1.Token {
         if ((podiumError.status === 400) && (podiumError.data.apiCode === "INVALID_TOKEN" /* INVALID_TOKEN */)) {
             this.RemoveToken();
         }
+        return podiumError;
     }
 }
 exports.Request = Request;
