@@ -92,8 +92,7 @@ export class Request extends Token {
                     resolve(response.data)
                 })
                 .catch((error) => {
-                    this.catchError(error)
-                    reject(error)
+                    reject(this.catchError(error))
                 })
         })
     }
@@ -124,7 +123,8 @@ export class Request extends Token {
         if ((podiumError.status === 400) && (podiumError.data.apiCode === API_CODE.INVALID_TOKEN)) {
             this.RemoveToken()
         }
-        throw podiumError
+
+        return podiumError
     }
 
 }
