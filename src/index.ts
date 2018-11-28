@@ -4,6 +4,7 @@ import {Auth} from './Api/Auth'
 import {Request} from './Podium/Request'
 import {Resource} from './Podium/Resource'
 
+
 export class Podium {
     public Auth: Auth
     public Campaigns: {
@@ -58,10 +59,10 @@ export class Podium {
             Product: new Resource(settings).SetResource('admin/product'),
         }
         this.Currency =  new Resource(settings).SetResource('admin/currency'),
-        this.Shop =  new Resource(settings).SetResource('admin/shop'),
-        this.LRG = {
-            Configuration: new Resource(settings).SetResource('lrg/configurations'),
-        }
+            this.Shop =  new Resource(settings).SetResource('admin/shop'),
+            this.LRG = {
+                Configuration: new Resource(settings).SetResource('lrg/configurations'),
+            }
         this.Rewards = new Resource(settings).SetResource('admin/reward').SetLegacy(true)
         this.Segments = new Resource(settings).SetResource('group').SetLegacy(true)
         this.Terms = {

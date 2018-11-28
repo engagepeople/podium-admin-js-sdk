@@ -15,7 +15,7 @@ export interface IPodiumErrorResponse {
 }
 
 export interface IPodiumPromise<T> extends Promise<T> {
-    finally?: string
+    // finally?: () => void | null
 }
 
 export interface IResponse {

@@ -7,6 +7,7 @@ import {Paginator} from './Paginator'
 
 export class Request extends Token {
     protected Legacy: boolean = false
+    // @ts-ignore
     protected Resource: string
     private settings: ISettings
 
@@ -87,10 +88,13 @@ export class Request extends Token {
         }, config)
 
         return new Promise((resolve, reject) => {
+            // @ts-ignore
             return axios(url, config)
+            // @ts-ignore
                 .then((response) => {
                     resolve(response.data)
                 })
+                // @ts-ignore
                 .catch((error) => {
                     reject(this.catchError(error))
                 })
@@ -104,7 +108,7 @@ export class Request extends Token {
         }
         return build
     }
-
+    // @ts-ignore
     private makeHeaders(): object {
         if (this.GetToken()) {
             return {
@@ -114,9 +118,13 @@ export class Request extends Token {
     }
 
     private catchError(error: AxiosError): IPodiumErrorResponse {
+
         const podiumError: IPodiumErrorResponse = {
+            // @ts-ignore
             data: error.response.data as IResponse,
+            // @ts-ignore
             status: error.response.status,
+            // @ts-ignore
             statusText: error.response.statusText,
         }
 

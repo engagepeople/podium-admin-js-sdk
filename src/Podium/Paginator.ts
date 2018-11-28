@@ -47,7 +47,7 @@ export class Paginator extends ListQuery {
             count: this.perPage,
             page: this.page,
         }
-        if (super.isLegacyMode()) {
+        if (this.isLegacyMode()) {
             return Object.assign(payload, {
                 sorting: {[this.sortField]: this.sortDirection},
             })

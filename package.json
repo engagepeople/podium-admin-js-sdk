@@ -2,6 +2,14 @@
   "name": "podium-admin-sdk",
   "version": "0.0.5",
   "description": "Podium Admin JavaScript SDK",
+  "private": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "keywords": [
     "loyalty",
     "reward",
@@ -12,43 +20,14 @@
     "redemption"
   ],
   "author": "Dan Shreim <dshreim@engagepeople.com>",
-  "private": false,
   "license": "Apache-2.0",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "webpack",
-    "dev": "webpack --watch",
-    "lint": "tslint -c tslint.json src/*/**.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/engagepeople/podium-admin-js-sdk.git"
-  },
-  "files": [
-    "dist/*.js",
-    "types/*.d.ts"
-  ],
-  "types": "./types/*.d.ts",
   "devDependencies": {
-    "source-map-loader": "^0.2.3",
-    "ts-loader": "^4.1.0",
-    "tslint": "^5.9.1",
-    "tslint-loader": "^3.6.0",
-    "typescript": "^2.8.1",
-    "webpack": "^4.5.0",
-    "webpack-cli": "^2.0.13"
+    "typescript": "^3.1.3"
   },
   "dependencies": {
     "axios": "^0.18.0"
   },
-  "engines": {
-    "node": ">= 4.0.0",
-    "npm": ">= 3.0.0"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
+  "files": [
+    "dist/"
   ]
 }
