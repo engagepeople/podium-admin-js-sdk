@@ -1,17 +1,47 @@
-import axios, {AxiosError, AxiosRequestConfig} from 'axios'
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {API_CODE, IPodiumErrorResponse, IPodiumPromise, IResponse, ISettings} from '../../types'
 import {ConvertTime} from './ConvertTime'
 import {Filter} from './Filter'
 import {Token} from './Token'
 import {Paginator} from './Paginator'
+import {Settings} from './Settings'
 
 export class Request extends Token {
-    protected Legacy: boolean = false
-    // @ts-ignore
-    protected Resource: string
-    private settings: ISettings
+    private static parseError(error: AxiosError): IPodiumErrorResponse {
+        if (error.response) {
+            const message =
+                (typeof error.response.data === 'object' &&
+                    (error.response.data.message
+                        || (error.response.data.detail && Object.values(error.response.data.detail)
+                            .map((errorDetail)  =>
+                                (typeof errorDetail === 'string' && errorDetail)))
+                        || Object.values(error.response.data)[0])
+                ) || error.response
+            return {
+                code: error.response.data.code,
+                data: error.response.data as IResponse,
+                message,
+                status: error.response.status,
+                statusText: error.response.statusText,
+            }
+        } else {
+            // todo: fix this
+            return {
+                code: 'Wrong Error response',
+                data: {} as IResponse,
+                message: 'Wrong Error response',
+                status: 500,
+                statusText: 'Wrong error',
+            }
+        }
+    }
 
-    constructor(settings: ISettings) {
+    protected Legacy: boolean = false
+    protected ResourceOnce!: string
+    protected Resource!: string
+    private settings: Settings
+
+    constructor(settings: Settings) {
         super()
         this.settings = settings
     }
@@ -90,49 +120,50 @@ export class Request extends Token {
         return new Promise((resolve, reject) => {
             // @ts-ignore
             return axios(url, config)
-            // @ts-ignore
-                .then((response) => {
+                .then((response: AxiosResponse) => {
                     resolve(response.data)
                 })
-                // @ts-ignore
-                .catch((error) => {
-                    reject(this.catchError(error))
+                .catch((error: AxiosError) => {
+                    const parsedError = Request.parseError(error)
+                    if (
+                        parsedError
+                        && (parsedError.status === 401)
+                        && (parsedError.code === API_CODE.INVALID_TOKEN)) {
+                        Token.getInstance().RemoveToken()
+                    }
+                    this.onRequestError(parsedError)
+                    reject(parsedError)
                 })
         })
     }
 
-    private makeURL(id?: number | string): string {
-        let build = this.settings.endpoint + this.Resource
+    protected makeURL(id?: number | string, postfix?: string): string {
+        let endpoint = this.settings.getEndpoint()
+        if (!endpoint.endsWith('/')) {
+            endpoint += '/'
+        }
+        const version = this.settings.getVersion()
+        const resource = this.ResourceOnce || this.Resource
+        // this.ResourceOnce = null
+
+        let build = `${endpoint}v${version}/${resource}`
         if (id) {
             build += `/${id}`
         }
+        if (postfix) {
+            build += `/${postfix}`
+        }
         return build
     }
-    // @ts-ignore
-    private makeHeaders(): object {
-        if (this.GetToken()) {
-            return {
-                Authentication: this.GetToken(),
-            }
+
+    private makeHeaders(): { Authentication: (string | null) } {
+        return {
+            Authentication: this.GetToken(),
         }
     }
 
-    private catchError(error: AxiosError): IPodiumErrorResponse {
-
-        const podiumError: IPodiumErrorResponse = {
-            // @ts-ignore
-            data: error.response.data as IResponse,
-            // @ts-ignore
-            status: error.response.status,
-            // @ts-ignore
-            statusText: error.response.statusText,
-        }
-
-        if ((podiumError.status === 400) && (podiumError.data.apiCode === API_CODE.INVALID_TOKEN)) {
-            this.RemoveToken()
-        }
-
-        return podiumError
+    private onRequestError(errorData: IPodiumErrorResponse): void {
+        this.settings.getOnRequestError()(errorData)
     }
 
 }
