@@ -26,6 +26,7 @@ export class Request extends Token {
             }
         } else {
             // todo: fix this
+            // AxiosError might not have .response, so i had to add if and else part i came up with randomly
             return {
                 code: 'Wrong Error response',
                 data: {} as IResponse,
