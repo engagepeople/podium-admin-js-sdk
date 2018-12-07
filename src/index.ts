@@ -7,6 +7,7 @@ import {Settings} from './Podium/Settings'
 
 export class Podium {
     public Auth: Auth
+    public Profile: Resource
     public Campaigns: {
         Flex: {
             Flex: Resource
@@ -42,6 +43,7 @@ export class Podium {
     }
     constructor(settings: Settings) {
         this.Auth = new Auth(settings)
+        this.Profile = new Resource(settings).SetResource('profile')
         this.Campaigns = {
             Flex: {
                 Flex: new Resource(settings).SetResource('admin/adhoc_campaign'),
