@@ -3,43 +3,47 @@ import {ISettings} from '../types'
 import {Auth} from './Api/Auth'
 import {Request} from './Podium/Request'
 import {Resource} from './Podium/Resource'
+import {Settings} from './Podium/Settings'
 
 export class Podium {
     public Auth: Auth
+    public Profile: Resource
     public Campaigns: {
         Flex: {
-            Flex: Request
+            Flex: Resource
             Issue: {
-                File: Request
-                FileError: Request
-                Manual: Request,
+                File: Resource
+                FileError: Resource
+                Manual: Resource,
             }
-            Rule: Request,
+            Rule: Resource,
         },
-        Incentive: Request,
+        Incentive: Resource,
     }
     public Product: {
-        Catalog: Request,
-        Filterable: Request,
-        Product: Request,
+        Catalog: Resource,
+        Filterable: Resource,
+        Product: Resource,
     }
-    public Currency: Request
-    public Rewards: Request
-    public Segments: Request
-    public Shop: Request
+    public Program: Resource
+    public Currency: Resource
+    public Rewards: Resource
+    public Segments: Resource
+    public Shop: Resource
     public LRG: {
-        Configuration: Request,
+        Configuration: Resource,
     }
     public Terms: {
-        Latest: Request
-        Terms: Request,
+        Latest: Resource
+        Terms: Resource,
     }
-    public Users: Request
+    public Users: Resource
     public SSO: {
-        Attributes: Request,
+        Attributes: Resource,
     }
-    constructor(settings: ISettings) {
+    constructor(settings: Settings) {
         this.Auth = new Auth(settings)
+        this.Profile = new Resource(settings).SetResource('profile')
         this.Campaigns = {
             Flex: {
                 Flex: new Resource(settings).SetResource('admin/adhoc_campaign'),
@@ -57,6 +61,7 @@ export class Podium {
             Filterable: new Resource(settings).SetResource('admin/productFilterable'),
             Product: new Resource(settings).SetResource('admin/product'),
         }
+        this.Program =  new Resource(settings).SetResource('program'),
         this.Currency =  new Resource(settings).SetResource('admin/currency'),
         this.Shop =  new Resource(settings).SetResource('admin/shop'),
         this.LRG = {
@@ -75,5 +80,6 @@ export class Podium {
     }
 }
 
+export {Settings as PodiumSettings} from './Podium/Settings'
 export {Paginator as PodiumPaginator} from './Podium/Paginator'
 export {Filter as PodiumFilter} from './Podium/Filter'

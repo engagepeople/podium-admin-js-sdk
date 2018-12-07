@@ -2,51 +2,52 @@ import {IPodiumList, IPodiumPromise, ISettings} from '../../types'
 import {Request} from './Request'
 import {Filter} from './Filter'
 import {Paginator} from './Paginator'
+import {Settings} from '../Podium/Settings'
 
 export class Resource extends Request {
 
-    constructor(settings: ISettings) {
+    constructor(settings: Settings) {
         super(settings)
     }
 
     public SetResource(resource: string): Resource {
-        super.Resource = resource
+        this.Resource = resource
         return this
     }
 
     public SetLegacy(legacy: boolean): Resource {
-        super.Legacy = legacy
+        this.Legacy = legacy
         return this
     }
 
     public Get<T>(id: number|string): IPodiumPromise<T> {
-        return super.GetRequest(id)
+        return this.GetRequest(id)
     }
 
     public List<F, T>(arg1?: Filter<F> | Paginator, paginator?: | Paginator): IPodiumPromise<IPodiumList<T>> {
-        let filter: Filter<F>
+        let filter: Filter<F> | undefined
         if (arg1 instanceof Paginator) {
             if (paginator) {
                 throw new TypeError('Order of parameters passed into List method must be Filter then Paginator')
             }
             paginator = arg1
-            filter = null
+            filter = undefined
         } else if (arg1 instanceof Filter) {
             filter = arg1
         }
-        return super.ListRequest(filter, paginator)
+        return this.ListRequest(filter, paginator)
     }
 
     public Create<T>(params?: object): IPodiumPromise<T> {
-        return super.PostRequest(params)
+        return this.PostRequest(params)
     }
 
-    public Update<T>(id: number|string, params?: object): IPodiumPromise<T> {
-        return super.UpdateRequest(id, params)
+    public Update<T>(id: number|string, params: object): IPodiumPromise<T> {
+        return this.UpdateRequest(id, params)
     }
 
     public Delete<T>(id: number|string): IPodiumPromise<T> {
-        return super.DeleteRequest(id)
+        return this.DeleteRequest(id)
     }
 
 }

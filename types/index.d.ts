@@ -1,5 +1,30 @@
 export interface ISettings {
     endpoint: string
+    locale: API_LOCALE
+    onRequestError: (error: IPodiumErrorResponse) => void
+    version: number
+}
+
+export const enum API_LOCALE {
+    EN_AU = 'en-AU',
+    EN_CA = 'en-CA',
+    EN_US = 'en-US',
+    FR_CA = 'fr-CA',
+}
+
+export const enum API_CODE {
+    INVALID_TOKEN = 'unauthorized',
+    SYSTEM_ACCOUNT_FOUND = 'SYSTEM_ACCOUNT_FOUND',
+    SYSTEM_ACCOUNT_NOT_FOUND = 'SYSTEM_ACCOUNT_NOT_FOUND',
+}
+
+export const enum SORT_DIRECTION {
+    ASC = 'asc',
+    DESC = 'desc',
+}
+
+export const enum SORT_FIELD {
+    CREATED_AT = 'created_at',
 }
 
 export interface IPodiumError {
@@ -9,13 +34,15 @@ export interface IPodiumError {
 }
 
 export interface IPodiumErrorResponse {
+    code: string
+    message: string
     data: IResponse
     status: number
     statusText: string
 }
 
 export interface IPodiumPromise<T> extends Promise<T> {
-    finally?: string
+    // finally?: () => void | null
 }
 
 export interface IResponse {
@@ -70,7 +97,6 @@ export interface ICurrency extends IPodiumModel {
 }
 
 export interface IFlex extends IPodiumModel {
-    readonly id: number
     program_id: number
     rules: IFlexRule[]
 }
@@ -98,16 +124,3 @@ export interface IReward extends IPodiumModel {
     program_id: number
 }
 
-export const enum API_CODE {
-    INVALID_TOKEN = 'INVALID_TOKEN',
-    SYSTEM_ACCOUNT_FOUND = 'SYSTEM_ACCOUNT_FOUND',
-    SYSTEM_ACCOUNT_NOT_FOUND = 'SYSTEM_ACCOUNT_NOT_FOUND',
-}
-
-export const enum SORT_DIRECTION {
-    ASC = 'asc',
-    DESC = 'desc',
-}
-export const enum SORT_FIELD {
-    CREATED_AT = 'created_at',
-}
