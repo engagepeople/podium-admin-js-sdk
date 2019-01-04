@@ -63,7 +63,7 @@ export class Podium {
         }
         this.Program =  new Resource(settings).SetResource('program'),
         this.Currency =  new Resource(settings).SetResource('admin/currency'),
-        this.Shop =  new Resource(settings).SetResource('admin/shop'),
+        this.Shop =  new Resource(settings).SetResource('admin/catalog'),
         this.LRG = {
             Configuration: new Resource(settings).SetResource('lrg/configurations'),
         }
