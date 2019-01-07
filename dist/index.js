@@ -25,7 +25,7 @@ class Podium {
         };
         this.Program = new Resource_1.Resource(settings).SetResource('program'),
             this.Currency = new Resource_1.Resource(settings).SetResource('admin/currency'),
-            this.Shop = new Resource_1.Resource(settings).SetResource('admin/shop'),
+            this.Shop = new Resource_1.Resource(settings).SetResource('admin/catalog'),
             this.LRG = {
                 Configuration: new Resource_1.Resource(settings).SetResource('lrg/configurations'),
             };
