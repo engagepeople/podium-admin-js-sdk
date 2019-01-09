@@ -53,12 +53,12 @@ export class Podium {
             Incentive: new Resource(settings).SetResource('admin/incentive_campaign'),
         }
         this.Product = {
-            Catalog: new Resource(settings).SetResource('admin/catalog'),
+            Catalog: new Resource(settings).SetResource('admin/productCollection'),
             Filterable: new Resource(settings).SetResource('admin/productFilterable'),
             Product: new Resource(settings).SetResource('admin/product'),
         }
         this.Currency =  new Resource(settings).SetResource('admin/currency'),
-        this.Shop =  new Resource(settings).SetResource('admin/shop'),
+        this.Shop =  new Resource(settings).SetResource('admin/catalog'),
         this.LRG = {
             Configuration: new Resource(settings).SetResource('lrg/configurations'),
         }
