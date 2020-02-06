@@ -21,7 +21,7 @@ export class Token {
     }
 
     protected HasToken(): boolean {
-        return (typeof this.GetToken() === 'string' && this.GetToken().length === 50)
+        return (typeof this.GetToken() === 'string')
     }
 
     protected RemoveToken(): boolean {
