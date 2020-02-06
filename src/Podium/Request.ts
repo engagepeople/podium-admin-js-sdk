@@ -108,7 +108,7 @@ export class Request extends Token {
     private makeHeaders(): object {
         if (this.GetToken()) {
             return {
-                Authentication: this.GetToken(),
+                Authorization: 'Bearer ' + this.GetToken(),
             }
         }
     }
