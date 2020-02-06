@@ -2334,7 +2334,7 @@ class Request extends Token_1.Token {
     makeHeaders() {
         if (this.GetToken()) {
             return {
-                Authentication: this.GetToken(),
+                Authorization: 'Bearer ' + this.GetToken(),
             };
         }
     }
@@ -2444,7 +2444,7 @@ class Token {
         }
     }
     HasToken() {
-        return (typeof this.GetToken() === 'string' && this.GetToken().length === 50);
+        return (typeof this.GetToken() === 'string');
     }
     RemoveToken() {
         if (this.hasLocalStorage()) {
