@@ -27,6 +27,7 @@ export class Podium {
     public Rewards: Request
     public Segments: Request
     public Shop: Request
+    public CatalogTypes: Request
     public LRG: {
         Configuration: Request,
     }
@@ -59,6 +60,7 @@ export class Podium {
         }
         this.Currency =  new Resource(settings).SetResource('admin/currency'),
         this.Shop =  new Resource(settings).SetResource('admin/catalog'),
+        this.CatalogTypes =  new Resource(settings).SetResource('admin/catalog-types'),
         this.LRG = {
             Configuration: new Resource(settings).SetResource('lrg/configurations'),
         }

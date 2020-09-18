@@ -2496,6 +2496,7 @@ class Podium {
         };
         this.Currency = new Resource_1.Resource(settings).SetResource('admin/currency'),
             this.Shop = new Resource_1.Resource(settings).SetResource('admin/catalog'),
+            this.CatalogTypes = new Resource_1.Resource(settings).SetResource('admin/catalog-types'),
             this.LRG = {
                 Configuration: new Resource_1.Resource(settings).SetResource('lrg/configurations'),
             };
