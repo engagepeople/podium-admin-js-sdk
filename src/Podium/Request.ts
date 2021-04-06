@@ -89,6 +89,10 @@ export class Request extends Token {
         return new Promise((resolve, reject) => {
             return axios(url, config)
                 .then((response) => {
+                    // Refresh the token when new one is avaialable in the response header
+                    if (response.headers.authorization  && (response.headers.authorization !== this.GetToken())) {
+                        this.SetToken(response.headers.authorization)
+                    }
                     resolve(response.data)
                 })
                 .catch((error) => {

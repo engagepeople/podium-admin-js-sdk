@@ -2317,6 +2317,10 @@ class Request extends Token_1.Token {
         return new Promise((resolve, reject) => {
             return axios_1.default(url, config)
                 .then((response) => {
+                // Refresh the token when new one is avaialable in the response header
+                if (response.headers.authorization && (response.headers.authorization !== this.GetToken())) {
+                    this.SetToken(response.headers.authorization);
+                }
                 resolve(response.data);
             })
                 .catch((error) => {
